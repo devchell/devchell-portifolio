@@ -18,6 +18,10 @@ type Project = {
   screenshots: string[];
 };
 
+type ContactResponse = {
+  message?: string;
+};
+
 const SECTION_IDS = ["hero", "sobre", "projetos", "contato"] as const;
 const CONTACT_EMAIL = "rodriguessnts@outlook.com";
 const WHATSAPP_NUMBER = "5511978290118";
@@ -504,31 +508,17 @@ export function PortfolioApp() {
     useState<(typeof SECTION_IDS)[number]>("hero");
   const [projectIndex, setProjectIndex] = useState(0);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
-  const [contactState, setContactState] = useState<ContactState>(() => {
-    if (typeof window === "undefined") return "idle";
-    return new URL(window.location.href).searchParams.get("contact") === "success"
-      ? "success"
-      : "idle";
-  });
+  const [contactState, setContactState] = useState<ContactState>("idle");
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [heroFocusIndex, setHeroFocusIndex] = useState(0);
   const [heroTypingPhase, setHeroTypingPhase] = useState<HeroTypingPhase>("holding");
   const [typedHeroFocus, setTypedHeroFocus] = useState<string>("SaaS + CRM + Landing Pages");
-  const [formNextUrl] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const currentUrl = new URL(window.location.href);
-    return `${currentUrl.origin}${currentUrl.pathname}?contact=success#contato`;
-  });
-  const [formPageUrl] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const currentUrl = new URL(window.location.href);
-    return `${currentUrl.origin}${currentUrl.pathname}#contato`;
-  });
   const [formValues, setFormValues] = useState({
     name: "",
     email: "",
     whatsapp: "",
     scope: "",
+    website: "",
   });
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -546,15 +536,6 @@ export function PortfolioApp() {
   useEffect(() => {
     window.localStorage.setItem("portfolio-locale", locale);
   }, [locale]);
-
-  useEffect(() => {
-    const currentUrl = new URL(window.location.href);
-    const status = currentUrl.searchParams.get("contact");
-    if (status === "success") {
-      currentUrl.searchParams.delete("contact");
-      window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.hash || "#contato"}`);
-    }
-  }, []);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -685,14 +666,16 @@ export function PortfolioApp() {
     });
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
     const name = formValues.name.trim();
     const email = formValues.email.trim();
     const whatsapp = formValues.whatsapp.trim();
     const scope = formValues.scope.trim();
+    const website = formValues.website.trim();
 
     if (name.length < 2) {
-      event.preventDefault();
       setContactState("error");
       setStatusOverride(
         locale === "pt"
@@ -703,7 +686,6 @@ export function PortfolioApp() {
     }
 
     if (!isValidEmail(email)) {
-      event.preventDefault();
       setContactState("error");
       setStatusOverride(
         locale === "pt"
@@ -714,7 +696,6 @@ export function PortfolioApp() {
     }
 
     if (whatsapp.replace(/\D/g, "").length < 10) {
-      event.preventDefault();
       setContactState("error");
       setStatusOverride(
         locale === "pt"
@@ -725,7 +706,6 @@ export function PortfolioApp() {
     }
 
     if (scope.length < 12) {
-      event.preventDefault();
       setContactState("error");
       setStatusOverride(
         locale === "pt"
@@ -741,6 +721,52 @@ export function PortfolioApp() {
         : "Running anti-spam verification and sending your request...",
     );
     setContactState("loading");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          whatsapp,
+          scope,
+          website,
+          locale,
+        }),
+      });
+      const data = (await response.json()) as ContactResponse;
+
+      if (!response.ok) {
+        setContactState("error");
+        setStatusOverride(
+          data.message ??
+            (locale === "pt"
+              ? "Não consegui enviar agora. Tente novamente ou use o WhatsApp."
+              : "I could not send it right now. Try again or use WhatsApp."),
+        );
+        return;
+      }
+
+      setContactState("success");
+      setStatusOverride(data.message ?? null);
+      setFormValues({
+        name: "",
+        email: "",
+        whatsapp: "",
+        scope: "",
+        website: "",
+      });
+    } catch {
+      setContactState("error");
+      setStatusOverride(
+        locale === "pt"
+          ? "Não consegui conectar ao envio agora. Tente novamente ou use o WhatsApp."
+          : "I could not connect to the submission service right now. Try again or use WhatsApp.",
+      );
+    }
   }
 
   function updateFormValue(field: keyof typeof formValues, value: string) {
@@ -1255,32 +1281,13 @@ export function PortfolioApp() {
 
                 <form
                   className={styles.contactForm}
-                  action={`https://formsubmit.co/${CONTACT_EMAIL}`}
-                  method="POST"
                   onSubmit={handleSubmit}
                 >
-                  <input type="hidden" name="_subject" value="Novo pedido de orçamento - DevChell" />
-                  <input type="hidden" name="_template" value="table" />
-                  <input type="hidden" name="_next" value={formNextUrl} />
-                  <input type="hidden" name="_url" value={formPageUrl} />
-                  <input type="hidden" name="_replyto" value={formValues.email} />
-                  <input
-                    type="hidden"
-                    name="_autoresponse"
-                    value={
-                      locale === "pt"
-                        ? "Recebi sua solicitação e retorno em breve com os próximos passos."
-                        : "I received your request and will get back to you soon with the next steps."
-                    }
-                  />
-                  <input
-                    type="hidden"
-                    name="_blacklist"
-                    value="bitcoin,casino,viagra,poker,loan,seo agency,guest post,backlink"
-                  />
                   <input
                     type="text"
-                    name="_honey"
+                    name="website"
+                    value={formValues.website}
+                    onChange={(event) => updateFormValue("website", event.target.value)}
                     tabIndex={-1}
                     autoComplete="off"
                     className={styles.honeypotField}
