@@ -226,12 +226,13 @@
 }
 
 .section {
-  padding: 126px 24px 34px;
+  padding: 126px 0 34px;
   scroll-margin-top: 104px;
 }
 
 .hero {
-  padding-top: 132px;
+  padding-top: 162px;
+  padding-bottom: 92px;
 }
 
 .projectsSection,
@@ -240,7 +241,7 @@
 }
 
 .sectionInner {
-  width: min(100%, 1200px);
+  width: min(100% - 32px, 1220px);
   margin: 0 auto;
 }
 
@@ -252,7 +253,7 @@
 .heroGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(380px, 500px);
-  gap: clamp(2rem, 4vw, 4rem);
+  gap: clamp(1.5rem, 2.8vw, 2.6rem);
   align-items: center;
 }
 
@@ -538,8 +539,8 @@
 
 .aboutGrid {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 540px);
-  gap: clamp(1.6rem, 4vw, 3rem);
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 540px);
+  gap: clamp(1.4rem, 2.8vw, 2.4rem);
   align-items: start;
 }
 
@@ -670,7 +671,7 @@
 .projectCard {
   display: grid;
   gap: 0;
-  max-width: 1040px;
+  max-width: 100%;
   margin: 0 auto;
   border: 0;
   border-radius: var(--radius-ui);
@@ -859,7 +860,7 @@
 }
 
 .contactWrap {
-  max-width: 980px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -1439,11 +1440,12 @@
   }
 
   .section {
-    padding: 100px 16px 22px;
+    padding: 100px 0 22px;
   }
 
   .hero {
-    padding-top: 108px;
+    padding-top: 124px;
+    padding-bottom: 52px;
   }
 
   .heroTitle {
