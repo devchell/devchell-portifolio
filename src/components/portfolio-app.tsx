@@ -51,10 +51,17 @@ const COPY = {
     projectsLabel: "PROJETOS",
     projectsTitleStrong: "O que eu",
     projectsTitleSoft: "já construí.",
+    projectsIntro:
+      "Projetos pensados para converter, posicionar e sustentar operação com clareza visual e técnica.",
     projectSummary: "Resumo do projeto",
+    projectVisit: "Visitar projeto",
+    contactLabel: "CONTATO",
+    contactTitleStrong: "Briefing em código,",
+    contactTitleSoft: "execução sem ruído.",
+    contactDescription:
+      "Descreva objetivo, contexto e escopo como se estivesse abrindo uma issue bem escrita. Eu organizo o resto.",
     commit: "COMMIT",
-    divider: "OU",
-    whatsapp: "ORCE PELO WHATSAPP",
+    whatsapp: "Conversar no WhatsApp",
     statusIdle: "Preencha o formulário e eu retorno pelo e-mail informado.",
     statusLoading: "Enviando sua solicitação...",
     statusSuccess: "Solicitação enviada. Vou responder pelo e-mail informado.",
@@ -86,10 +93,17 @@ const COPY = {
     projectsLabel: "PROJECTS",
     projectsTitleStrong: "What I",
     projectsTitleSoft: "have built.",
+    projectsIntro:
+      "Projects designed to convert, position brands, and support real operations with visual and technical clarity.",
     projectSummary: "Project overview",
+    projectVisit: "Visit project",
+    contactLabel: "CONTACT",
+    contactTitleStrong: "Code-like brief,",
+    contactTitleSoft: "clean execution.",
+    contactDescription:
+      "Describe the goal, context, and scope as if you were opening a well-written issue. I will structure the rest.",
     commit: "COMMIT",
-    divider: "OR",
-    whatsapp: "QUOTE VIA WHATSAPP",
+    whatsapp: "Talk on WhatsApp",
     statusIdle: "Fill out the form and I will reply to the email you provide.",
     statusLoading: "Sending your request...",
     statusSuccess: "Request sent. I will reply to your email shortly.",
@@ -343,6 +357,10 @@ export function PortfolioApp() {
 
   const copy = COPY[locale];
   const activeProject = PROJECTS[projectIndex];
+  const heroTags = copy.heroMeta
+    .split("·")
+    .map((item) => item.trim())
+    .filter(Boolean);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -381,11 +399,6 @@ export function PortfolioApp() {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
 
-          const id = entry.target.getAttribute("id");
-          if (id && SECTION_IDS.includes(id as (typeof SECTION_IDS)[number])) {
-            setActiveSection(id as (typeof SECTION_IDS)[number]);
-          }
-
           entry.target
             .querySelectorAll<HTMLElement>("[data-reveal]")
             .forEach((node) => node.classList.add(styles.revealVisible));
@@ -393,14 +406,34 @@ export function PortfolioApp() {
       },
       {
         root,
-        threshold: 0.3,
+        threshold: 0.16,
       },
     );
 
     sections.forEach((section) => observer.observe(section));
 
+    const syncActiveSection = () => {
+      const offset = root.scrollTop + 180;
+      let current = sections[0];
+
+      sections.forEach((section) => {
+        if (section.offsetTop <= offset) {
+          current = section;
+        }
+      });
+
+      const id = current?.getAttribute("id");
+      if (id && SECTION_IDS.includes(id as (typeof SECTION_IDS)[number])) {
+        setActiveSection(id as (typeof SECTION_IDS)[number]);
+      }
+    };
+
+    syncActiveSection();
+    root.addEventListener("scroll", syncActiveSection, { passive: true });
+
     return () => {
       observer.disconnect();
+      root.removeEventListener("scroll", syncActiveSection);
     };
   }, []);
 
@@ -520,70 +553,174 @@ export function PortfolioApp() {
       <main ref={scrollRef} className={styles.scrollRoot}>
         <section id="hero" data-section className={`${styles.section} ${styles.hero}`}>
           <div className={`${styles.sectionInner} ${styles.heroInner}`}>
-            <div className={styles.heroShell}>
-              <div
-                className={`${styles.heroLine} ${styles.reveal} ${styles.revealVisible}`}
-                data-reveal
-              />
-              <p
-                className={`${styles.eyebrow} ${styles.reveal} ${styles.revealVisible}`}
-                data-reveal
-              >
-                {copy.heroEyebrow}
-              </p>
-              <h1
-                className={`${styles.heroTitle} ${styles.reveal} ${styles.revealVisible}`}
-                data-reveal
-              >
-                <span>{copy.heroTitleTop}</span>
-                <strong>{copy.heroTitleBottom}</strong>
-              </h1>
-              <p
-                className={`${styles.heroDescription} ${styles.reveal} ${styles.revealVisible}`}
-                data-reveal
-              >
-                {copy.heroDescription}
-              </p>
-              <p
-                className={`${styles.heroMeta} ${styles.reveal} ${styles.revealVisible}`}
-                data-reveal
-              >
-                {copy.heroMeta}
-              </p>
-              <div
-                className={`${styles.heroButtons} ${styles.reveal} ${styles.revealVisible}`}
-                data-reveal
-              >
-                <button
-                  type="button"
-                  className={`${styles.primaryButton} ${styles.themeFade}`}
-                  onClick={() => scrollToSection("contato")}
+            <div className={styles.heroGrid}>
+              <div className={styles.heroIntro}>
+                <div
+                  className={`${styles.heroLine} ${styles.reveal} ${styles.revealVisible}`}
+                  data-reveal
+                />
+                <p
+                  className={`${styles.eyebrow} ${styles.reveal} ${styles.revealVisible}`}
+                  data-reveal
                 >
-                  {copy.heroPrimary}
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.secondaryButton} ${styles.themeFade}`}
-                  onClick={() => scrollToSection("projetos")}
+                  {copy.heroEyebrow}
+                </p>
+                <h1
+                  className={`${styles.heroTitle} ${styles.reveal} ${styles.revealVisible}`}
+                  data-reveal
                 >
-                  {copy.heroSecondary}
-                </button>
+                  <span>{copy.heroTitleTop}</span>
+                  <strong>{copy.heroTitleBottom}</strong>
+                </h1>
+                <p
+                  className={`${styles.heroDescription} ${styles.reveal} ${styles.revealVisible}`}
+                  data-reveal
+                >
+                  {copy.heroDescription}
+                </p>
+                <div
+                  className={`${styles.heroTagRow} ${styles.reveal} ${styles.revealVisible}`}
+                  data-reveal
+                >
+                  {heroTags.map((tag) => (
+                    <span key={tag} className={styles.heroTag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div
+                  className={`${styles.heroButtons} ${styles.reveal} ${styles.revealVisible}`}
+                  data-reveal
+                >
+                  <button
+                    type="button"
+                    className={`${styles.primaryButton} ${styles.themeFade}`}
+                    onClick={() => scrollToSection("contato")}
+                  >
+                    {copy.heroPrimary}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.secondaryButton} ${styles.themeFade}`}
+                    onClick={() => scrollToSection("projetos")}
+                  >
+                    {copy.heroSecondary}
+                  </button>
+                </div>
               </div>
-              <button
-                type="button"
-                className={styles.heroScrollButton}
-                onClick={() => scrollToSection("sobre")}
-                aria-label="Ir para a próxima seção"
+
+              <div
+                className={`${styles.editorShell} ${styles.heroCodeCard} ${styles.reveal}`}
+                data-reveal
               >
-                <DownArrowIcon />
-              </button>
+                <div className={styles.editorTopbar}>
+                  <span className={styles.editorDot} data-tone="red" />
+                  <span className={styles.editorDot} data-tone="yellow" />
+                  <span className={styles.editorDot} data-tone="green" />
+                </div>
+                <div className={styles.editorBody}>
+                  <pre className={`${styles.editorCode} ${styles.heroCode}`}>
+                    <div>
+                      <span className={styles.editorKeyword}>const</span>
+                      {" builder = {"}
+                    </div>
+                    <div>
+                      {'  focus:        '}
+                      <span className={styles.editorString}>{'"SaaS + CRM + Landing Pages"'}</span>,
+                    </div>
+                    <div>
+                      {'  execution:    '}
+                      <span className={styles.editorString}>{'"Design + Code + Deploy"'}</span>,
+                    </div>
+                    <div>
+                      {'  delivery:     '}
+                      <span className={styles.editorString}>{'"Produtos claros e escaláveis"'}</span>,
+                    </div>
+                    <div>
+                      {'  status:       '}
+                      <span className={styles.editorNote}>online</span>,
+                    </div>
+                    <div>{"}"}</div>
+                  </pre>
+                  <div className={styles.heroCodeFooter}>
+                    <span className={styles.heroCodeAccent}>{"// available for freelance"}</span>
+                    <span>{"clean architecture | visual clarity"}</span>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            <button
+              type="button"
+              className={styles.heroScrollButton}
+              onClick={() => scrollToSection("sobre")}
+              aria-label="Ir para a próxima seção"
+            >
+              <DownArrowIcon />
+            </button>
           </div>
         </section>
 
         <section id="sobre" data-section className={styles.section}>
           <div className={styles.sectionInner}>
             <div className={styles.aboutGrid}>
+              <div className={`${styles.aboutContentCard} ${styles.reveal}`} data-reveal>
+                <p className={styles.sectionKicker}>{copy.aboutLabel}</p>
+                <h2 className={styles.sectionTitle}>
+                  <strong>{copy.aboutTitleStrong}</strong>
+                  <span>{copy.aboutTitleSoft}</span>
+                </h2>
+                <p className={styles.sectionText}>
+                  {locale === "pt" ? (
+                    <>
+                      Transformo ideias em produtos digitais completos, do backend ao
+                      deploy. Sou <strong>Desenvolvedor FullStack</strong> especializado em
+                      soluções web integradas, com foco em SaaS, CRMs e automações que
+                      funcionam no dia a dia do seu negócio.
+                    </>
+                  ) : (
+                    <>
+                      I turn ideas into complete digital products, from backend to
+                      deployment. I am a <strong>FullStack Developer</strong> specialized in
+                      integrated web solutions, focused on SaaS, CRM workflows and
+                      automations that support day-to-day business operations.
+                    </>
+                  )}
+                </p>
+                <div className={styles.aboutDivider} />
+                <p className={styles.sectionText}>
+                  {locale === "pt" ? (
+                    <>
+                      <strong>Cientista da Computação</strong>, pós-graduado em{" "}
+                      <strong>Arquitetura e Engenharia de IA</strong>, aplicando essa base
+                      para entregar sistemas mais inteligentes, seguros e escaláveis.
+                    </>
+                  ) : (
+                    <>
+                      <strong>Computer Science graduate</strong>, with postgraduate work in{" "}
+                      <strong>AI Architecture and Engineering</strong>, applying that
+                      background to deliver systems that are more intelligent, secure and
+                      scalable.
+                    </>
+                  )}
+                </p>
+
+                <div className={styles.aboutFacts}>
+                  <div className={styles.aboutFact}>
+                    <span>{locale === "pt" ? "Foco" : "Focus"}</span>
+                    <strong>SaaS, CRM & Automation</strong>
+                  </div>
+                  <div className={styles.aboutFact}>
+                    <span>{locale === "pt" ? "Entrega" : "Delivery"}</span>
+                    <strong>{locale === "pt" ? "Design, código e deploy" : "Design, code and deploy"}</strong>
+                  </div>
+                  <div className={styles.aboutFact}>
+                    <span>{locale === "pt" ? "Base" : "Foundation"}</span>
+                    <strong>Architecture + AI Engineering</strong>
+                  </div>
+                </div>
+              </div>
+
               <div
                 className={`${styles.editorShell} ${styles.aboutEditor} ${styles.reveal}`}
                 data-reveal
@@ -600,52 +737,52 @@ export function PortfolioApp() {
                       {" developer = {"}
                     </div>
                     <div>
-                      {'    name:        '}
+                      {'  name:         '}
                       <span className={styles.editorString}>{'"João Vitor Rodrigues"'}</span>,
                     </div>
                     <div>
-                      {'    alias:       '}
+                      {'  alias:        '}
                       <span className={styles.editorString}>{'"Chell"'}</span>,
                     </div>
                     <div>&nbsp;</div>
-                    <div>{"    stack: ["}</div>
+                    <div>{"  stack: ["}</div>
                     <div>
-                      {'      '}
+                      {'    '}
                       <span className={styles.editorString}>{'"Next.JS"'}</span>,{" "}
                       <span className={styles.editorString}>{'"TypeScript"'}</span>,{" "}
                       <span className={styles.editorString}>{'"Node.JS"'}</span>,
                     </div>
                     <div>
-                      {'      '}
+                      {'    '}
                       <span className={styles.editorString}>{'"Java"'}</span>,{" "}
                       <span className={styles.editorString}>{'"C#"'}</span>,{" "}
                       <span className={styles.editorString}>{'"AWS"'}</span>,{" "}
                       <span className={styles.editorString}>{'"LLMs"'}</span>
                     </div>
-                    <div>{"    ],"}</div>
+                    <div>{"  ],"}</div>
                     <div>&nbsp;</div>
-                    <div>{"    especialidades: ["}</div>
+                    <div>{"  especialidades: ["}</div>
                     <div>
-                      {'      '}
+                      {'    '}
                       <span className={styles.editorString}>{'"SaaS"'}</span>,{" "}
                       <span className={styles.editorString}>{'"CRM"'}</span>,{" "}
                       <span className={styles.editorString}>{'"Landing Page"'}</span>,
                     </div>
                     <div>
-                      {'      '}
+                      {'    '}
                       <span className={styles.editorString}>{'"UI/UX"'}</span>,{" "}
                       <span className={styles.editorString}>{'"Automação"'}</span>,{" "}
                       <span className={styles.editorString}>{'"AppSec"'}</span>,{" "}
                       <span className={styles.editorString}>{'"AI"'}</span>
                     </div>
-                    <div>{"    ],"}</div>
+                    <div>{"  ],"}</div>
                     <div>&nbsp;</div>
                     <div>
-                      {'    formacao:    '}
+                      {'  formacao:     '}
                       <span className={styles.editorString}>{'"Ciência da Computação"'}</span>,
                     </div>
                     <div>
-                      {'    posGrad:     '}
+                      {'  posGrad:      '}
                       <span className={styles.editorString}>
                         {'"Arquitetura & Engenharia de IA"'}
                       </span>
@@ -653,58 +790,20 @@ export function PortfolioApp() {
                     </div>
                     <div>&nbsp;</div>
                     <div>
-                      {"    freelance:   "}
+                      {"  freelance:    "}
                       <span className={styles.editorNote}>true</span>,
                     </div>
                     <div>
-                      {"    disponivel:  "}
+                      {"  disponivel:   "}
                       <span className={styles.editorNote}>true</span>,
+                    </div>
+                    <div>
+                      {"  approach:     "}
+                      <span className={styles.editorString}>{'"clarity over noise"'}</span>,
                     </div>
                     <div>{"}"}</div>
                   </pre>
                 </div>
-              </div>
-
-              <div className={`${styles.aboutContent} ${styles.reveal}`} data-reveal>
-                <p className={styles.sectionKicker}>{copy.aboutLabel}</p>
-                <h2 className={styles.sectionTitle}>
-                  <strong>{copy.aboutTitleStrong}</strong>
-                  <span>{copy.aboutTitleSoft}</span>
-                </h2>
-                <p className={styles.sectionText}>
-                  {locale === "pt" ? (
-                    <>
-                      Transformo ideias em produtos digitais completos, do backend ao
-                      deploy. Sou <strong>Desenvolvedor FullStack</strong> especializado
-                      em soluções web integradas, com foco em SaaS, CRMs e automações que
-                      funcionam no dia a dia do seu negócio.
-                    </>
-                  ) : (
-                    <>
-                      I turn ideas into complete digital products, from backend to
-                      deployment. I am a <strong>FullStack Developer</strong> specialized
-                      in integrated web solutions, focused on SaaS, CRM workflows and
-                      automations that support day-to-day business operations.
-                    </>
-                  )}
-                </p>
-                <div className={styles.aboutDivider} />
-                <p className={styles.sectionText}>
-                  {locale === "pt" ? (
-                    <>
-                      <strong>Cientista da Computação</strong>, pós-graduado em{" "}
-                      <strong>Arquitetura e Engenharia de IA</strong> aplicando essa base
-                      para entregar sistemas mais inteligentes, seguros e escaláveis.
-                    </>
-                  ) : (
-                    <>
-                      <strong>Computer Science graduate</strong>, with postgraduate work
-                      in <strong>AI Architecture and Engineering</strong>, applying that
-                      background to deliver systems that are more intelligent, secure and
-                      scalable.
-                    </>
-                  )}
-                </p>
               </div>
             </div>
           </div>
@@ -722,10 +821,29 @@ export function PortfolioApp() {
                 <strong>{copy.projectsTitleStrong}</strong>
                 <span>{copy.projectsTitleSoft}</span>
               </h2>
+              <p className={styles.projectsIntroText}>{copy.projectsIntro}</p>
             </div>
 
             <div className={`${styles.projectCard} ${styles.reveal}`} data-reveal>
               <div className={styles.projectFrame}>
+                <button
+                  type="button"
+                  className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
+                  onClick={() => navigateProject("prev")}
+                  aria-label="Projeto anterior"
+                >
+                  <ArrowIcon direction="left" />
+                </button>
+
+                <button
+                  type="button"
+                  className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
+                  onClick={() => navigateProject("next")}
+                  aria-label="Próximo projeto"
+                >
+                  <ArrowIcon />
+                </button>
+
                 <a
                   href={activeProject.url}
                   target="_blank"
@@ -752,41 +870,38 @@ export function PortfolioApp() {
               </div>
 
               <div className={`${styles.projectBase} ${styles.themeFade}`}>
-                <button
-                  type="button"
-                  className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
-                  onClick={() => navigateProject("prev")}
-                  aria-label="Projeto anterior"
-                >
-                  <ArrowIcon direction="left" />
-                </button>
-
-                <button
-                  type="button"
-                  className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
-                  onClick={() => navigateProject("next")}
-                  aria-label="Próximo projeto"
-                >
-                  <ArrowIcon />
-                </button>
-
-                <div className={styles.projectIntro}>
+                <div className={styles.projectMetaRow}>
                   <div className={styles.projectLead}>
                     <p className={styles.projectName}>{activeProject.name}</p>
                     <p className={styles.projectType}>{activeProject.type[locale]}</p>
                   </div>
 
-                  <div className={styles.projectStacks}>
-                    {activeProject.stacks.map((stack) => (
-                      <Image
-                        key={stack}
-                        className={styles.stackIcon}
-                        src={STACK_ICON_MAP[stack]}
-                        alt={stack}
-                        width={29}
-                        height={29}
-                      />
-                    ))}
+                  <div className={styles.projectUtilities}>
+                    <div className={styles.projectStacks}>
+                      {activeProject.stacks.map((stack) => (
+                        <span key={stack} className={styles.stackBadge}>
+                          <Image
+                            className={styles.stackIcon}
+                            src={STACK_ICON_MAP[stack]}
+                            alt={stack}
+                            width={18}
+                            height={18}
+                          />
+                          <span>{stack}</span>
+                        </span>
+                      ))}
+                    </div>
+
+                    <a
+                      href={activeProject.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.projectVisit}
+                      aria-label={`Abrir ${activeProject.name}`}
+                    >
+                      <span>{copy.projectVisit}</span>
+                      <ExternalIcon />
+                    </a>
                   </div>
                 </div>
 
@@ -798,16 +913,6 @@ export function PortfolioApp() {
                     {activeProject.description[locale]}
                   </p>
                 </div>
-
-                <a
-                  href={activeProject.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.externalLink}
-                  aria-label={`Abrir ${activeProject.name}`}
-                >
-                  <ExternalIcon />
-                </a>
               </div>
             </div>
           </div>
@@ -819,6 +924,15 @@ export function PortfolioApp() {
           className={`${styles.section} ${styles.contactSection}`}
         >
           <div className={styles.sectionInner}>
+            <div className={`${styles.contactHeader} ${styles.reveal}`} data-reveal>
+              <p className={styles.sectionKicker}>{copy.contactLabel}</p>
+              <h2 className={styles.sectionTitle}>
+                <strong>{copy.contactTitleStrong}</strong>
+                <span>{copy.contactTitleSoft}</span>
+              </h2>
+              <p className={styles.contactDescription}>{copy.contactDescription}</p>
+            </div>
+
             <div className={`${styles.contactWrap} ${styles.reveal}`} data-reveal>
               <div className={`${styles.editorShell} ${styles.contactEditorShell}`}>
                 <div className={styles.editorTopbar}>
@@ -829,44 +943,27 @@ export function PortfolioApp() {
 
                 <form className={styles.contactForm} onSubmit={handleSubmit}>
                   <div className={styles.contactCodeGrid}>
+                    <div className={styles.codeGutter} aria-hidden="true">
+                      <span>01</span>
+                      <span>02</span>
+                      <span>03</span>
+                      <span>04</span>
+                      <span>05</span>
+                      <span>06</span>
+                      <span>07</span>
+                      <span>08</span>
+                      <span>09</span>
+                      <span>10</span>
+                    </div>
+
                     <div className={styles.contactCodeBlock}>
-                      <div>
+                      <div className={styles.codeLine}>
                         <span className={styles.editorKeyword}>const</span>
                         {" projectRequest = {"}
                       </div>
-                      <div>
-                        {'  name:      '}
+                      <label className={styles.codeFieldRow}>
+                        <span className={styles.codeLabel}>{'  name:      '}</span>
                         <span className={styles.editorString}>{'"'}</span>
-                        <span className={styles.editorPlaceholder}>
-                          {copy.placeholders.name}
-                        </span>
-                        <span className={styles.editorString}>{'"'}</span>,
-                      </div>
-                      <div>
-                        {'  email:     '}
-                        <span className={styles.editorString}>{'"'}</span>
-                        <span className={styles.editorPlaceholder}>
-                          {copy.placeholders.email}
-                        </span>
-                        <span className={styles.editorString}>{'"'}</span>,
-                      </div>
-                      <div>
-                        {'  whatsapp:  '}
-                        <span className={styles.editorString}>{'"'}</span>
-                        <span className={styles.editorPlaceholder}>
-                          {copy.placeholders.whatsapp}
-                        </span>
-                        <span className={styles.editorString}>{'"'}</span>,
-                      </div>
-                      <div>{'  scope:     '}{'"'}</div>
-                      <div className={styles.scopeSpacer} />
-                      <div>{'"'}</div>
-                      <div>{"};"}</div>
-                    </div>
-
-                    <div className={styles.fieldStack}>
-                      <label className={styles.fieldCard}>
-                        <span className={styles.srOnly}>{copy.placeholders.name}</span>
                         <input
                           name="name"
                           value={formValues.name}
@@ -878,11 +975,13 @@ export function PortfolioApp() {
                           }
                           placeholder={copy.placeholders.name}
                           autoComplete="name"
+                          className={styles.codeInlineInput}
                         />
+                        <span className={styles.editorString}>{'"'}</span>,
                       </label>
-
-                      <label className={styles.fieldCard}>
-                        <span className={styles.srOnly}>{copy.placeholders.email}</span>
+                      <label className={styles.codeFieldRow}>
+                        <span className={styles.codeLabel}>{'  email:     '}</span>
+                        <span className={styles.editorString}>{'"'}</span>
                         <input
                           name="email"
                           type="email"
@@ -895,11 +994,13 @@ export function PortfolioApp() {
                           }
                           placeholder={copy.placeholders.email}
                           autoComplete="email"
+                          className={styles.codeInlineInput}
                         />
+                        <span className={styles.editorString}>{'"'}</span>,
                       </label>
-
-                      <label className={styles.fieldCard}>
-                        <span className={styles.srOnly}>{copy.placeholders.whatsapp}</span>
+                      <label className={styles.codeFieldRow}>
+                        <span className={styles.codeLabel}>{'  whatsapp:  '}</span>
+                        <span className={styles.editorString}>{'"'}</span>
                         <input
                           name="whatsapp"
                           value={formValues.whatsapp}
@@ -911,10 +1012,12 @@ export function PortfolioApp() {
                           }
                           placeholder={copy.placeholders.whatsapp}
                           autoComplete="tel"
+                          className={styles.codeInlineInput}
                         />
+                        <span className={styles.editorString}>{'"'}</span>,
                       </label>
-
-                      <label className={styles.fieldCard}>
+                      <div className={styles.codeLine}>{'  scope:      `'} </div>
+                      <label className={styles.codeTextareaWrap}>
                         <span className={styles.srOnly}>Escopo do projeto</span>
                         <textarea
                           name="scope"
@@ -926,34 +1029,36 @@ export function PortfolioApp() {
                             }))
                           }
                           placeholder={copy.placeholders.scope}
+                          className={styles.codeTextarea}
                         />
                       </label>
+                      <div className={styles.codeLine}>{'  `,'}</div>
+                      <div className={styles.codeLine}>{'};'}</div>
                     </div>
                   </div>
 
-                  <div className={styles.formActions}>
-                    <button
-                      type="submit"
-                      className={`${styles.submitButton} ${styles.themeFade}`}
-                    >
-                      {copy.commit}
-                    </button>
+                  <div className={styles.contactActions}>
+                    <p className={styles.statusMessage}>{formatStatus(locale, contactState)}</p>
+                    <div className={styles.contactButtons}>
+                      <a
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`${styles.whatsappButton} ${styles.themeFade}`}
+                      >
+                        {copy.whatsapp}
+                      </a>
+
+                      <button
+                        type="submit"
+                        className={`${styles.submitButton} ${styles.themeFade}`}
+                      >
+                        {copy.commit}
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
-
-              <div className={styles.formDivider}>{copy.divider}</div>
-
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                className={`${styles.whatsappButton} ${styles.themeFade}`}
-              >
-                {copy.whatsapp}
-              </a>
-
-              <p className={styles.statusMessage}>{formatStatus(locale, contactState)}</p>
             </div>
           </div>
         </section>
