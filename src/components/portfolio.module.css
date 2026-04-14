@@ -940,6 +940,8 @@
   outline: none;
   font: inherit;
   font-family: var(--font-terminal);
+  caret-color: var(--code-text);
+  color-scheme: dark;
 }
 
 .codeInlineInput {
@@ -951,6 +953,25 @@
 .codeInlineInput::placeholder,
 .codeTextarea::placeholder {
   color: var(--code-placeholder);
+}
+
+.codeInlineInput::selection,
+.codeTextarea::selection {
+  background: rgba(125, 211, 252, 0.22);
+  color: var(--code-text);
+}
+
+.codeInlineInput:-webkit-autofill,
+.codeInlineInput:-webkit-autofill:hover,
+.codeInlineInput:-webkit-autofill:focus,
+.codeTextarea:-webkit-autofill,
+.codeTextarea:-webkit-autofill:hover,
+.codeTextarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--code-string);
+  caret-color: var(--code-text);
+  border-radius: inherit;
+  box-shadow: 0 0 0 1000px var(--code-surface) inset;
+  transition: background-color 9999s ease-out 0s;
 }
 
 .codeTextareaWrap {
