@@ -18,10 +18,16 @@ function getLocale(value: unknown): Locale {
   return value === "en" ? "en" : "pt";
 }
 
-function sanitize(value: unknown, maxLength = MAX_FIELD_LENGTH) {
+function sanitizeSingleLine(value: unknown, maxLength = MAX_FIELD_LENGTH) {
   if (typeof value !== "string") return "";
 
   return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+function sanitizeMultiline(value: unknown, maxLength = MAX_FIELD_LENGTH) {
+  if (typeof value !== "string") return "";
+
+  return value.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim().slice(0, maxLength + 1);
 }
 
 function isValidEmail(value: string) {
@@ -37,10 +43,11 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#39;");
 }
 
-function responseMessage(locale: Locale, key: "invalid" | "spam" | "missingConfig" | "provider" | "success") {
+function responseMessage(locale: Locale, key: "invalid" | "tooLong" | "spam" | "missingConfig" | "provider" | "success") {
   const messages = {
     pt: {
       invalid: "Revise os dados do formulario antes de enviar.",
+      tooLong: "O escopo passou do limite de caracteres. Reduza o texto antes de enviar.",
       spam: "Envio bloqueado pela protecao anti-spam.",
       missingConfig: "Envio ainda nao configurado. Defina a chave RESEND_API_KEY na Vercel.",
       provider: "Nao consegui concluir o envio agora. Tente novamente em instantes ou use o WhatsApp.",
@@ -48,6 +55,7 @@ function responseMessage(locale: Locale, key: "invalid" | "spam" | "missingConfi
     },
     en: {
       invalid: "Please review the form fields before sending.",
+      tooLong: "The project scope is over the character limit. Shorten it before sending.",
       spam: "Submission blocked by anti-spam protection.",
       missingConfig: "Email sending is not configured yet. Define RESEND_API_KEY on Vercel.",
       provider: "I could not complete the submission right now. Try again shortly or use WhatsApp.",
@@ -63,11 +71,11 @@ export async function POST(request: Request) {
     const resendApiKey = process.env.RESEND_API_KEY;
     const body = (await request.json()) as ContactPayload;
     const locale = getLocale(body.locale);
-    const name = sanitize(body.name, 120);
-    const email = sanitize(body.email, 180).toLowerCase();
-    const whatsapp = sanitize(body.whatsapp, 40);
-    const scope = sanitize(body.scope);
-    const website = sanitize(body.website, 120);
+    const name = sanitizeSingleLine(body.name, 120);
+    const email = sanitizeSingleLine(body.email, 180).toLowerCase();
+    const whatsapp = sanitizeSingleLine(body.whatsapp, 40);
+    const scope = sanitizeMultiline(body.scope);
+    const website = sanitizeSingleLine(body.website, 120);
 
     if (website) {
       return Response.json({ message: responseMessage(locale, "spam") }, { status: 400 });
@@ -75,6 +83,10 @@ export async function POST(request: Request) {
 
     if (name.length < 2 || !isValidEmail(email) || whatsapp.replace(/\D/g, "").length < 10 || scope.length < 12) {
       return Response.json({ message: responseMessage(locale, "invalid") }, { status: 400 });
+    }
+
+    if (scope.length > MAX_FIELD_LENGTH) {
+      return Response.json({ message: responseMessage(locale, "tooLong") }, { status: 413 });
     }
 
     if (!resendApiKey) {

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, startTransition, useEffect, useEffectEvent, useRef, useState } from "react";
+import { FormEvent, startTransition, useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 import styles from "./portfolio.module.css";
 
 type Theme = "light" | "dark";
@@ -24,6 +24,7 @@ type ContactResponse = {
 
 const SECTION_IDS = ["hero", "sobre", "projetos", "contato"] as const;
 const CONTACT_EMAIL = "rodriguessnts@outlook.com";
+const CONTACT_SCOPE_MAX_LENGTH = 1200;
 const WHATSAPP_NUMBER = "5511978290118";
 const WHATSAPP_MESSAGE = {
   pt: "Olá, João. Quero solicitar um orçamento de serviço para um projeto.",
@@ -333,6 +334,39 @@ function formatStatus(locale: Locale, state: ContactState) {
   return messages.statusIdle;
 }
 
+function subscribePreferences(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener("portfolio-preferences", callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("portfolio-preferences", callback);
+  };
+}
+
+function getThemeSnapshot(): Theme {
+  const savedTheme = window.localStorage.getItem("portfolio-theme");
+  return savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
+}
+
+function getLocaleSnapshot(): Locale {
+  const savedLocale = window.localStorage.getItem("portfolio-locale");
+  return savedLocale === "en" || savedLocale === "pt" ? savedLocale : "pt";
+}
+
+function getServerThemeSnapshot(): Theme {
+  return "light";
+}
+
+function getServerLocaleSnapshot(): Locale {
+  return "pt";
+}
+
+function persistPreference(key: "portfolio-theme" | "portfolio-locale", value: Theme | Locale) {
+  window.localStorage.setItem(key, value);
+  window.dispatchEvent(new Event("portfolio-preferences"));
+}
+
 function ArrowIcon({ direction = "right" }: { direction?: "left" | "right" }) {
   return (
     <svg
@@ -494,16 +528,8 @@ function InstagramIcon() {
 }
 
 export function PortfolioApp() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
-    const savedTheme = window.localStorage.getItem("portfolio-theme");
-    return savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
-  });
-  const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === "undefined") return "pt";
-    const savedLocale = window.localStorage.getItem("portfolio-locale");
-    return savedLocale === "en" || savedLocale === "pt" ? savedLocale : "pt";
-  });
+  const theme = useSyncExternalStore(subscribePreferences, getThemeSnapshot, getServerThemeSnapshot);
+  const locale = useSyncExternalStore(subscribePreferences, getLocaleSnapshot, getServerLocaleSnapshot);
   const [activeSection, setActiveSection] =
     useState<(typeof SECTION_IDS)[number]>("hero");
   const [projectIndex, setProjectIndex] = useState(0);
@@ -528,14 +554,10 @@ export function PortfolioApp() {
   const heroFocusRotations = HERO_FOCUS_ROTATIONS[locale];
   const activeHeroFocus = heroFocusRotations[heroFocusIndex];
   const stackLabels = STACK_LABELS[locale];
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem("portfolio-theme", theme);
-  }, [theme]);
 
   useEffect(() => {
-    window.localStorage.setItem("portfolio-locale", locale);
-  }, [locale]);
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -643,13 +665,15 @@ export function PortfolioApp() {
   }
 
   function handleLocaleToggle() {
-    setLocale((current) => {
-      const next = current === "pt" ? "en" : "pt";
-      setHeroFocusIndex(0);
-      setTypedHeroFocus(HERO_FOCUS_ROTATIONS[next][0]);
-      setHeroTypingPhase("holding");
-      return next;
-    });
+    const next = locale === "pt" ? "en" : "pt";
+    setHeroFocusIndex(0);
+    setTypedHeroFocus(HERO_FOCUS_ROTATIONS[next][0]);
+    setHeroTypingPhase("holding");
+    persistPreference("portfolio-locale", next);
+  }
+
+  function handleThemeToggle() {
+    persistPreference("portfolio-theme", theme === "light" ? "dark" : "light");
   }
 
   function navigateProject(direction: "next" | "prev") {
@@ -711,6 +735,16 @@ export function PortfolioApp() {
         locale === "pt"
           ? "Descreva o escopo com um pouco mais de detalhe antes de enviar."
           : "Please add a bit more detail about the project scope before sending.",
+      );
+      return;
+    }
+
+    if (scope.length > CONTACT_SCOPE_MAX_LENGTH) {
+      setContactState("error");
+      setStatusOverride(
+        locale === "pt"
+          ? `Reduza o escopo para ate ${CONTACT_SCOPE_MAX_LENGTH} caracteres antes de enviar.`
+          : `Shorten the scope to ${CONTACT_SCOPE_MAX_LENGTH} characters before sending.`,
       );
       return;
     }
@@ -787,6 +821,8 @@ export function PortfolioApp() {
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     WHATSAPP_MESSAGE[locale],
   )}`;
+  const scopeCharacterCount = formValues.scope.length;
+  const isScopeOverLimit = scopeCharacterCount > CONTACT_SCOPE_MAX_LENGTH;
 
   return (
     <div className={styles.portfolio} data-locale={locale} data-theme={theme}>
@@ -839,7 +875,7 @@ export function PortfolioApp() {
             <button
               type="button"
               className={`${styles.iconButton} ${styles.themeFade}`}
-              onClick={() => setTheme((current) => (current === "light" ? "dark" : "light"))}
+              onClick={handleThemeToggle}
               aria-label={copy.toggleThemeAria}
             >
               <SunMoonIcon theme={theme} />
@@ -1382,7 +1418,20 @@ export function PortfolioApp() {
                           required
                           minLength={12}
                           className={styles.codeTextarea}
+                          aria-invalid={isScopeOverLimit}
+                          aria-describedby="scope-character-count"
                         />
+                        <span
+                          id="scope-character-count"
+                          className={styles.scopeCounter}
+                          data-over-limit={isScopeOverLimit}
+                          aria-live="polite"
+                        >
+                          <span className={styles.scopeAlertDot} aria-hidden="true" />
+                          <span>
+                            {scopeCharacterCount}/{CONTACT_SCOPE_MAX_LENGTH}
+                          </span>
+                        </span>
                       </label>
                       <div className={styles.codeLine}>
                         <span className={styles.editorStringQuote}>`</span>
