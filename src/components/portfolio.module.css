@@ -964,6 +964,13 @@
   padding: 0;
 }
 
+.countryCodeInput {
+  min-width: 3.8rem;
+  max-width: 4.6rem;
+  flex: 0 0 4.4rem;
+  color: var(--code-boolean);
+}
+
 .codeInlineInput::placeholder,
 .codeTextarea::placeholder {
   color: var(--code-placeholder);
@@ -1670,19 +1677,27 @@
 
   .codeFieldRow {
     display: grid;
-    grid-template-columns: 6.5rem auto minmax(0, 1fr) auto auto;
+    grid-template-columns: 6.5rem auto minmax(3.8rem, 4.4rem) minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 0.1rem 0.18rem;
     padding: 0.18rem 0;
   }
 
   .codeFieldRow > .codeInlineInput {
-    grid-column: 3;
     width: 100%;
     min-width: 0;
     padding: 0;
     font-size: 0.96rem;
     line-height: 1.35;
+  }
+
+  .codeFieldRow > .countryCodeInput {
+    grid-column: 3;
+    max-width: none;
+  }
+
+  .codeFieldRow > .countryCodeInput + .codeInlineInput {
+    grid-column: 4;
   }
 
   .codeFieldRow > .codeLabel {

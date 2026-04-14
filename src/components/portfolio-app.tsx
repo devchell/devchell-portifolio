@@ -100,6 +100,7 @@ const COPY = {
     placeholders: {
       name: "Seu nome",
       email: "seu@email.com",
+      countryCode: "+55",
       whatsapp: "(11) 9 9999-9999",
       scope:
         "Conte o objetivo, prazo, entregáveis, integrações e qualquer referência importante.",
@@ -150,7 +151,8 @@ const COPY = {
     placeholders: {
       name: "Your name",
       email: "your@email.com",
-      whatsapp: "(11) 9 9999-9999",
+      countryCode: "+1",
+      whatsapp: "(555) 123-4567",
       scope:
         "Tell me the goal, timeline, deliverables, integrations and any references that matter.",
     },
@@ -323,6 +325,56 @@ function formatCodeKey(label: string, width = 18) {
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function normalizeCountryCode(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  return digits ? `+${digits}` : "+";
+}
+
+function getPhoneDigitLimit(countryCode: string) {
+  if (countryCode === "+55") return 11;
+  if (countryCode === "+1") return 10;
+  if (countryCode === "+44" || countryCode === "+351") return 9;
+  return 15;
+}
+
+function formatLocalPhone(countryCode: string, value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, getPhoneDigitLimit(countryCode));
+
+  if (countryCode === "+55") {
+    if (digits.length <= 2) return digits ? `(${digits}` : "";
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  }
+
+  if (countryCode === "+1") {
+    if (digits.length <= 3) return digits ? `(${digits}` : "";
+    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  }
+
+  if (countryCode === "+44") {
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+    return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 11)}`;
+  }
+
+  if (countryCode === "+351") {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+    return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6, 9)}`;
+  }
+
+  return digits.replace(/(\d{1,3})(?=(\d{3})+(?!\d))/g, "$1 ").trim();
+}
+
+function formatInternationalPhone(countryCode: string, localPhone: string) {
+  return `${normalizeCountryCode(countryCode)} ${formatLocalPhone(countryCode, localPhone)}`.trim();
+}
+
+function getInternationalPhoneDigits(countryCode: string, localPhone: string) {
+  return `${countryCode.replace(/\D/g, "")}${localPhone.replace(/\D/g, "")}`;
 }
 
 function formatStatus(locale: Locale, state: ContactState) {
@@ -542,6 +594,7 @@ export function PortfolioApp() {
   const [formValues, setFormValues] = useState({
     name: "",
     email: "",
+    countryCode: "+55",
     whatsapp: "",
     scope: "",
     website: "",
@@ -695,7 +748,8 @@ export function PortfolioApp() {
 
     const name = formValues.name.trim();
     const email = formValues.email.trim();
-    const whatsapp = formValues.whatsapp.trim();
+    const countryCode = normalizeCountryCode(formValues.countryCode);
+    const whatsapp = formatInternationalPhone(countryCode, formValues.whatsapp);
     const scope = formValues.scope.trim();
     const website = formValues.website.trim();
 
@@ -719,12 +773,12 @@ export function PortfolioApp() {
       return;
     }
 
-    if (whatsapp.replace(/\D/g, "").length < 10) {
+    if (!/^\+\d{1,4}$/.test(countryCode) || getInternationalPhoneDigits(countryCode, formValues.whatsapp).length < 8) {
       setContactState("error");
       setStatusOverride(
         locale === "pt"
-          ? "Informe um WhatsApp válido com DDD."
-          : "Please enter a valid WhatsApp number including area code.",
+          ? "Informe o codigo do pais com + e um WhatsApp valido."
+          : "Enter the country code with + and a valid WhatsApp number.",
       );
       return;
     }
@@ -789,6 +843,7 @@ export function PortfolioApp() {
       setFormValues({
         name: "",
         email: "",
+        countryCode: locale === "pt" ? "+55" : "+1",
         whatsapp: "",
         scope: "",
         website: "",
@@ -806,7 +861,14 @@ export function PortfolioApp() {
   function updateFormValue(field: keyof typeof formValues, value: string) {
     setFormValues((current) => ({
       ...current,
-      [field]: value,
+      ...(field === "countryCode"
+        ? {
+            countryCode: normalizeCountryCode(value),
+            whatsapp: formatLocalPhone(normalizeCountryCode(value), current.whatsapp),
+          }
+        : {
+            [field]: field === "whatsapp" ? formatLocalPhone(current.countryCode, value) : value,
+          }),
     }));
 
     if (contactState !== "idle") {
@@ -1391,6 +1453,18 @@ export function PortfolioApp() {
                           {formatCodeKey(codeCopy.contact.whatsappKey)}
                         </span>
                         <span className={styles.editorStringQuote}>{'"'}</span>
+                        <input
+                          name="countryCode"
+                          value={formValues.countryCode}
+                          onChange={(event) => updateFormValue("countryCode", event.target.value)}
+                          placeholder={copy.placeholders.countryCode}
+                          autoComplete="tel-country-code"
+                          inputMode="tel"
+                          required
+                          pattern="^\+\d{1,4}$"
+                          className={`${styles.codeInlineInput} ${styles.countryCodeInput}`}
+                          aria-label={locale === "pt" ? "Codigo do pais" : "Country code"}
+                        />
                         <input
                           name="whatsapp"
                           value={formValues.whatsapp}

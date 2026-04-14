@@ -34,6 +34,10 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function isValidInternationalPhone(value: string) {
+  return /^\+\d{1,4}\s[\d\s()-]{6,24}$/.test(value) && value.replace(/\D/g, "").length >= 8;
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
@@ -73,7 +77,7 @@ export async function POST(request: Request) {
     const locale = getLocale(body.locale);
     const name = sanitizeSingleLine(body.name, 120);
     const email = sanitizeSingleLine(body.email, 180).toLowerCase();
-    const whatsapp = sanitizeSingleLine(body.whatsapp, 40);
+    const whatsapp = sanitizeSingleLine(body.whatsapp, 60);
     const scope = sanitizeMultiline(body.scope);
     const website = sanitizeSingleLine(body.website, 120);
 
@@ -81,7 +85,7 @@ export async function POST(request: Request) {
       return Response.json({ message: responseMessage(locale, "spam") }, { status: 400 });
     }
 
-    if (name.length < 2 || !isValidEmail(email) || whatsapp.replace(/\D/g, "").length < 10 || scope.length < 12) {
+    if (name.length < 2 || !isValidEmail(email) || !isValidInternationalPhone(whatsapp) || scope.length < 12) {
       return Response.json({ message: responseMessage(locale, "invalid") }, { status: 400 });
     }
 
