@@ -37,6 +37,29 @@ const STACK_ICON_MAP: Record<string, string> = {
   UX: "/stacks/ux.svg",
 };
 
+const STACK_LABELS: Record<Locale, Record<string, string>> = {
+  pt: {
+    "Next.js": "Next.js",
+    TypeScript: "TypeScript",
+    Vercel: "Vercel",
+    CRM: "CRM",
+    Automation: "Automação",
+    SEO: "SEO",
+    "Lead Flow": "Fluxo de leads",
+    UX: "UX",
+  },
+  en: {
+    "Next.js": "Next.js",
+    TypeScript: "TypeScript",
+    Vercel: "Vercel",
+    CRM: "CRM",
+    Automation: "Automation",
+    SEO: "SEO",
+    "Lead Flow": "Lead Flow",
+    UX: "UX",
+  },
+};
+
 const COPY = {
   pt: {
     nav: ["Sobre", "Projetos", "Contato"],
@@ -76,9 +99,17 @@ const COPY = {
       scope:
         "Conte o objetivo, prazo, entregáveis, integrações e qualquer referência importante.",
     },
+    navAria: "Seções",
+    toggleLocaleAria: "Alternar idioma",
+    toggleThemeAria: "Alternar tema",
+    heroScrollAria: "Ir para a próxima seção",
+    previousProjectAria: "Projeto anterior",
+    nextProjectAria: "Próximo projeto",
+    openProjectAria: "Abrir projeto",
+    screenshotAlt: "captura",
     footerContact: "Contato",
-    footerSocials: "Redes Sociais",
-    footerSignature: "Portifólio criado por",
+    footerSocials: "Redes sociais",
+    footerSignature: "Portfólio criado por",
   },
   en: {
     nav: ["About", "Projects", "Contact"],
@@ -118,8 +149,16 @@ const COPY = {
       scope:
         "Tell me the goal, timeline, deliverables, integrations and any references that matter.",
     },
+    navAria: "Sections",
+    toggleLocaleAria: "Switch language",
+    toggleThemeAria: "Switch theme",
+    heroScrollAria: "Go to the next section",
+    previousProjectAria: "Previous project",
+    nextProjectAria: "Next project",
+    openProjectAria: "Open project",
+    screenshotAlt: "screenshot",
     footerContact: "Contact",
-    footerSocials: "Social",
+    footerSocials: "Social media",
     footerSignature: "Portfolio created by",
   },
 } as const;
@@ -183,21 +222,21 @@ const HERO_FOCUS_ROTATIONS = {
 const CODE_COPY = {
   pt: {
     hero: {
-      objectName: "builder",
-      focusKey: "focus",
-      executionKey: "execution",
-      executionValue: "Design + Code + Deploy",
-      deliveryKey: "delivery",
+      objectName: "construtor",
+      focusKey: "foco",
+      executionKey: "execucao",
+      executionValue: "Design + Código + Deploy",
+      deliveryKey: "entrega",
       deliveryValue: "Sistemas claros e escaláveis",
       statusKey: "status",
-      statusValue: "online",
+      statusValue: "ativo",
       footerComment: "// disponível para freela",
       footerMeta: "arquitetura limpa | clareza visual",
     },
     about: {
-      objectName: "developer",
-      nameKey: "name",
-      aliasKey: "alias",
+      objectName: "desenvolvedor",
+      nameKey: "nome",
+      aliasKey: "apelido",
       stackKey: "stack",
       stackLines: [
         ["Next.js", "TypeScript", "Node.js"],
@@ -212,9 +251,9 @@ const CODE_COPY = {
       educationValue: "Ciência da Computação",
       postGradKey: "posGrad",
       postGradValue: "Arquitetura & Engenharia de IA",
-      freelanceKey: "freelance",
+      freelanceKey: "freela",
       availableKey: "disponivel",
-      approachKey: "approach",
+      approachKey: "abordagem",
       approachValue: "clareza acima do ruído",
     },
     contact: {
@@ -478,6 +517,7 @@ export function PortfolioApp() {
   const activeProject = PROJECTS[projectIndex];
   const heroFocusRotations = HERO_FOCUS_ROTATIONS[locale];
   const activeHeroFocus = heroFocusRotations[heroFocusIndex];
+  const stackLabels = STACK_LABELS[locale];
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem("portfolio-theme", theme);
@@ -662,7 +702,7 @@ export function PortfolioApp() {
             <span>{"</DevChell>"}</span>
           </button>
 
-          <nav className={styles.nav} aria-label="Seções">
+          <nav className={styles.nav} aria-label={copy.navAria}>
             <button
               type="button"
               className={styles.navButton}
@@ -694,7 +734,7 @@ export function PortfolioApp() {
               type="button"
               className={`${styles.iconButton} ${styles.themeFade}`}
               onClick={handleLocaleToggle}
-              aria-label="Alternar idioma"
+              aria-label={copy.toggleLocaleAria}
             >
               <GlobeIcon />
             </button>
@@ -702,7 +742,7 @@ export function PortfolioApp() {
               type="button"
               className={`${styles.iconButton} ${styles.themeFade}`}
               onClick={() => setTheme((current) => (current === "light" ? "dark" : "light"))}
-              aria-label="Alternar tema"
+              aria-label={copy.toggleThemeAria}
             >
               <SunMoonIcon theme={theme} />
             </button>
@@ -815,7 +855,7 @@ export function PortfolioApp() {
               type="button"
               className={styles.heroScrollButton}
               onClick={() => scrollToSection("sobre")}
-              aria-label="Ir para a próxima seção"
+              aria-label={copy.heroScrollAria}
             >
               <DownArrowIcon />
             </button>
@@ -869,7 +909,7 @@ export function PortfolioApp() {
                 <div className={styles.aboutFacts}>
                   <div className={styles.aboutFact}>
                     <span>{locale === "pt" ? "Foco" : "Focus"}</span>
-                    <strong>SaaS, CRM & Automation</strong>
+                    <strong>{locale === "pt" ? "SaaS, CRM & Automação" : "SaaS, CRM & Automation"}</strong>
                   </div>
                   <div className={styles.aboutFact}>
                     <span>{locale === "pt" ? "Entrega" : "Delivery"}</span>
@@ -877,7 +917,7 @@ export function PortfolioApp() {
                   </div>
                   <div className={styles.aboutFact}>
                     <span>{locale === "pt" ? "Base" : "Foundation"}</span>
-                    <strong>Architecture + AI Engineering</strong>
+                    <strong>{locale === "pt" ? "Arquitetura + Engenharia de IA" : "Architecture + AI Engineering"}</strong>
                   </div>
                 </div>
               </div>
@@ -1023,7 +1063,7 @@ export function PortfolioApp() {
                   type="button"
                   className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
                   onClick={() => navigateProject("prev")}
-                  aria-label="Projeto anterior"
+                  aria-label={copy.previousProjectAria}
                 >
                   <ArrowIcon direction="left" />
                 </button>
@@ -1032,7 +1072,7 @@ export function PortfolioApp() {
                   type="button"
                   className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
                   onClick={() => navigateProject("next")}
-                  aria-label="Próximo projeto"
+                  aria-label={copy.nextProjectAria}
                 >
                   <ArrowIcon />
                 </button>
@@ -1042,7 +1082,7 @@ export function PortfolioApp() {
                   target="_blank"
                   rel="noreferrer"
                   className={styles.projectLinkOverlay}
-                  aria-label={`Abrir projeto ${activeProject.name}`}
+                  aria-label={`${copy.openProjectAria} ${activeProject.name}`}
                 />
 
                 {activeProject.screenshots.map((shot, index) => (
@@ -1054,7 +1094,7 @@ export function PortfolioApp() {
                     <Image
                       className={styles.projectImage}
                       src={shot}
-                      alt={`${activeProject.name} screenshot ${index + 1}`}
+                      alt={`${activeProject.name} ${copy.screenshotAlt} ${index + 1}`}
                       fill
                       sizes="(max-width: 1040px) 100vw, 964px"
                     />
@@ -1083,7 +1123,7 @@ export function PortfolioApp() {
                             width={18}
                             height={18}
                           />
-                          <span>{stack}</span>
+                          <span>{stackLabels[stack] ?? stack}</span>
                         </span>
                       ))}
                     </div>
@@ -1093,7 +1133,7 @@ export function PortfolioApp() {
                       target="_blank"
                       rel="noreferrer"
                       className={styles.projectVisit}
-                      aria-label={`Abrir ${activeProject.name}`}
+                      aria-label={`${copy.openProjectAria} ${activeProject.name}`}
                     >
                       <span>{copy.projectVisit}</span>
                       <ExternalIcon />
