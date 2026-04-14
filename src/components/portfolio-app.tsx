@@ -316,6 +316,10 @@ function formatCodeKey(label: string, width = 18) {
   return `  ${label}:`.padEnd(width, " ");
 }
 
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 function formatStatus(locale: Locale, state: ContactState) {
   const messages = COPY[locale];
 
@@ -500,10 +504,26 @@ export function PortfolioApp() {
     useState<(typeof SECTION_IDS)[number]>("hero");
   const [projectIndex, setProjectIndex] = useState(0);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
-  const [contactState, setContactState] = useState<ContactState>("idle");
+  const [contactState, setContactState] = useState<ContactState>(() => {
+    if (typeof window === "undefined") return "idle";
+    return new URL(window.location.href).searchParams.get("contact") === "success"
+      ? "success"
+      : "idle";
+  });
+  const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [heroFocusIndex, setHeroFocusIndex] = useState(0);
   const [heroTypingPhase, setHeroTypingPhase] = useState<HeroTypingPhase>("holding");
   const [typedHeroFocus, setTypedHeroFocus] = useState<string>("SaaS + CRM + Landing Pages");
+  const [formNextUrl] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const currentUrl = new URL(window.location.href);
+    return `${currentUrl.origin}${currentUrl.pathname}?contact=success#contato`;
+  });
+  const [formPageUrl] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const currentUrl = new URL(window.location.href);
+    return `${currentUrl.origin}${currentUrl.pathname}#contato`;
+  });
   const [formValues, setFormValues] = useState({
     name: "",
     email: "",
@@ -526,6 +546,15 @@ export function PortfolioApp() {
   useEffect(() => {
     window.localStorage.setItem("portfolio-locale", locale);
   }, [locale]);
+
+  useEffect(() => {
+    const currentUrl = new URL(window.location.href);
+    const status = currentUrl.searchParams.get("contact");
+    if (status === "success") {
+      currentUrl.searchParams.delete("contact");
+      window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.hash || "#contato"}`);
+    }
+  }, []);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -656,33 +685,76 @@ export function PortfolioApp() {
     });
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setContactState("loading");
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const name = formValues.name.trim();
+    const email = formValues.email.trim();
+    const whatsapp = formValues.whatsapp.trim();
+    const scope = formValues.scope.trim();
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formValues),
-      });
-
-      if (!response.ok) {
-        setContactState("error");
-        return;
-      }
-
-      setContactState("success");
-      setFormValues({
-        name: "",
-        email: "",
-        whatsapp: "",
-        scope: "",
-      });
-    } catch {
+    if (name.length < 2) {
+      event.preventDefault();
       setContactState("error");
+      setStatusOverride(
+        locale === "pt"
+          ? "Informe seu nome completo para continuar."
+          : "Please enter your full name before sending.",
+      );
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      event.preventDefault();
+      setContactState("error");
+      setStatusOverride(
+        locale === "pt"
+          ? "Informe um e-mail válido para que eu possa responder."
+          : "Please enter a valid email so I can reply.",
+      );
+      return;
+    }
+
+    if (whatsapp.replace(/\D/g, "").length < 10) {
+      event.preventDefault();
+      setContactState("error");
+      setStatusOverride(
+        locale === "pt"
+          ? "Informe um WhatsApp válido com DDD."
+          : "Please enter a valid WhatsApp number including area code.",
+      );
+      return;
+    }
+
+    if (scope.length < 12) {
+      event.preventDefault();
+      setContactState("error");
+      setStatusOverride(
+        locale === "pt"
+          ? "Descreva o escopo com um pouco mais de detalhe antes de enviar."
+          : "Please add a bit more detail about the project scope before sending.",
+      );
+      return;
+    }
+
+    setStatusOverride(
+      locale === "pt"
+        ? "Validando anti-spam e enviando sua solicitação..."
+        : "Running anti-spam verification and sending your request...",
+    );
+    setContactState("loading");
+  }
+
+  function updateFormValue(field: keyof typeof formValues, value: string) {
+    setFormValues((current) => ({
+      ...current,
+      [field]: value,
+    }));
+
+    if (contactState !== "idle") {
+      setContactState("idle");
+    }
+
+    if (statusOverride) {
+      setStatusOverride(null);
     }
   }
 
@@ -812,10 +884,12 @@ export function PortfolioApp() {
                       <span className={styles.editorOperator}> = </span>
                       <span className={styles.editorPunctuation}>{"{"}</span>
                     </div>
-                    <div>
+                    <div className={styles.heroFocusLine}>
                       {formatCodeKey(codeCopy.hero.focusKey)}
                       <span className={styles.editorStringQuote}>{'"'}</span>
-                      <span className={styles.editorString}>{typedHeroFocus}</span>
+                      <span className={`${styles.editorString} ${styles.heroFocusValue}`}>
+                        {typedHeroFocus}
+                      </span>
                       <span className={styles.codeCursor} aria-hidden="true" />
                       <span className={styles.editorStringQuote}>{'"'}</span>
                       <span className={styles.editorPunctuation}>,</span>
@@ -1177,7 +1251,39 @@ export function PortfolioApp() {
                   <span className={styles.editorDot} data-tone="green" />
                 </div>
 
-                <form className={styles.contactForm} onSubmit={handleSubmit}>
+                <form
+                  className={styles.contactForm}
+                  action={`https://formsubmit.co/${CONTACT_EMAIL}`}
+                  method="POST"
+                  onSubmit={handleSubmit}
+                >
+                  <input type="hidden" name="_subject" value="Novo pedido de orçamento - DevChell" />
+                  <input type="hidden" name="_template" value="table" />
+                  <input type="hidden" name="_next" value={formNextUrl} />
+                  <input type="hidden" name="_url" value={formPageUrl} />
+                  <input type="hidden" name="_replyto" value={formValues.email} />
+                  <input
+                    type="hidden"
+                    name="_autoresponse"
+                    value={
+                      locale === "pt"
+                        ? "Recebi sua solicitação e retorno em breve com os próximos passos."
+                        : "I received your request and will get back to you soon with the next steps."
+                    }
+                  />
+                  <input
+                    type="hidden"
+                    name="_blacklist"
+                    value="bitcoin,casino,viagra,poker,loan,seo agency,guest post,backlink"
+                  />
+                  <input
+                    type="text"
+                    name="_honey"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    className={styles.honeypotField}
+                    aria-hidden="true"
+                  />
                   <div className={styles.contactCodeGrid}>
                     <div className={styles.codeGutter} aria-hidden="true">
                       <span>01</span>
@@ -1207,14 +1313,11 @@ export function PortfolioApp() {
                         <input
                           name="name"
                           value={formValues.name}
-                          onChange={(event) =>
-                            setFormValues((current) => ({
-                              ...current,
-                              name: event.target.value,
-                            }))
-                          }
+                          onChange={(event) => updateFormValue("name", event.target.value)}
                           placeholder={copy.placeholders.name}
                           autoComplete="name"
+                          required
+                          minLength={2}
                           className={styles.codeInlineInput}
                         />
                         <span className={styles.editorStringQuote}>{'"'}</span>
@@ -1229,14 +1332,10 @@ export function PortfolioApp() {
                           name="email"
                           type="email"
                           value={formValues.email}
-                          onChange={(event) =>
-                            setFormValues((current) => ({
-                              ...current,
-                              email: event.target.value,
-                            }))
-                          }
+                          onChange={(event) => updateFormValue("email", event.target.value)}
                           placeholder={copy.placeholders.email}
                           autoComplete="email"
+                          required
                           className={styles.codeInlineInput}
                         />
                         <span className={styles.editorStringQuote}>{'"'}</span>
@@ -1250,14 +1349,11 @@ export function PortfolioApp() {
                         <input
                           name="whatsapp"
                           value={formValues.whatsapp}
-                          onChange={(event) =>
-                            setFormValues((current) => ({
-                              ...current,
-                              whatsapp: event.target.value,
-                            }))
-                          }
+                          onChange={(event) => updateFormValue("whatsapp", event.target.value)}
                           placeholder={copy.placeholders.whatsapp}
                           autoComplete="tel"
+                          inputMode="tel"
+                          required
                           className={styles.codeInlineInput}
                         />
                         <span className={styles.editorStringQuote}>{'"'}</span>
@@ -1272,13 +1368,10 @@ export function PortfolioApp() {
                         <textarea
                           name="scope"
                           value={formValues.scope}
-                          onChange={(event) =>
-                            setFormValues((current) => ({
-                              ...current,
-                              scope: event.target.value,
-                            }))
-                          }
+                          onChange={(event) => updateFormValue("scope", event.target.value)}
                           placeholder={copy.placeholders.scope}
+                          required
+                          minLength={12}
                           className={styles.codeTextarea}
                         />
                       </label>
@@ -1293,7 +1386,9 @@ export function PortfolioApp() {
                   </div>
 
                   <div className={styles.contactActions}>
-                    <p className={styles.statusMessage}>{formatStatus(locale, contactState)}</p>
+                    <p className={styles.statusMessage}>
+                      {statusOverride ?? formatStatus(locale, contactState)}
+                    </p>
                     <div className={styles.contactButtons}>
                       <button
                         type="submit"
