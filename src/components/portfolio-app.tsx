@@ -13,9 +13,10 @@ type Project = {
   name: string;
   url: string;
   locked?: boolean;
-  type: Record<Locale, string>;
+  title: Record<Locale, string>;
   description: Record<Locale, string>;
-  stacks: string[];
+  technologies: string[];
+  systems: string[];
   screenshots: string[];
 };
 
@@ -50,36 +51,87 @@ const COUNTRY_OPTIONS = [
   { code: "+61", country: "Australia", short: "AU", placeholder: "412 345 678" },
 ] as const;
 
-const STACK_ICON_MAP: Record<string, string> = {
-  "Next.js": "/stacks/nextjs.svg",
-  TypeScript: "/stacks/typescript.svg",
-  Vercel: "/stacks/vercel.svg",
-  CRM: "/stacks/crm.svg",
-  Automation: "/stacks/automation.svg",
-  SEO: "/stacks/seo.svg",
-  "Lead Flow": "/stacks/leadflow.svg",
-  UX: "/stacks/ux.svg",
+const PROJECT_BADGE_META: Record<string, { short: string; color: string }> = {
+  "Next.js": { short: "N", color: "#111827" },
+  TypeScript: { short: "TS", color: "#1d4ed8" },
+  Vercel: { short: "VC", color: "#0f172a" },
+  React: { short: "R", color: "#0f766e" },
+  Tailwind: { short: "TW", color: "#0f766e" },
+  Prisma: { short: "PR", color: "#2563eb" },
+  PostgreSQL: { short: "PG", color: "#1d4ed8" },
+  Supabase: { short: "SB", color: "#15803d" },
+  "Node.js": { short: "ND", color: "#3f6212" },
+  Express: { short: "EX", color: "#475569" },
+  "Socket.IO": { short: "IO", color: "#334155" },
+  Drizzle: { short: "DZ", color: "#4d7c0f" },
+  SaaS: { short: "SA", color: "#111827" },
+  CRM: { short: "CRM", color: "#1d4ed8" },
+  Automation: { short: "AT", color: "#15803d" },
+  SEO: { short: "SEO", color: "#c2410c" },
+  Omnichannel: { short: "OM", color: "#7c3aed" },
+  AI: { short: "AI", color: "#9333ea" },
+  "White Label": { short: "WL", color: "#7c3aed" },
+  "Landing Page": { short: "LP", color: "#0f766e" },
+  Dashboard: { short: "DB", color: "#1d4ed8" },
+  Franchise: { short: "FR", color: "#9a3412" },
+  WhatsApp: { short: "WA", color: "#15803d" },
+  Email: { short: "EM", color: "#475569" },
+  UX: { short: "UX", color: "#0369a1" },
 };
 
-const STACK_LABELS: Record<Locale, Record<string, string>> = {
+const PROJECT_BADGE_LABELS: Record<Locale, Record<string, string>> = {
   pt: {
     "Next.js": "Next.js",
     TypeScript: "TypeScript",
     Vercel: "Vercel",
+    React: "React",
+    Tailwind: "Tailwind",
+    Prisma: "Prisma",
+    PostgreSQL: "PostgreSQL",
+    Supabase: "Supabase",
+    "Node.js": "Node.js",
+    Express: "Express",
+    "Socket.IO": "Socket.IO",
+    Drizzle: "Drizzle",
+    SaaS: "SaaS",
     CRM: "CRM",
     Automation: "Automação",
     SEO: "SEO",
-    "Lead Flow": "Fluxo de leads",
+    Omnichannel: "Omnichannel",
+    AI: "IA",
+    "White Label": "White Label",
+    "Landing Page": "Landing Page",
+    Dashboard: "Dashboard",
+    Franchise: "Franquias",
+    WhatsApp: "WhatsApp",
+    Email: "E-mail",
     UX: "UX",
   },
   en: {
     "Next.js": "Next.js",
     TypeScript: "TypeScript",
     Vercel: "Vercel",
+    React: "React",
+    Tailwind: "Tailwind",
+    Prisma: "Prisma",
+    PostgreSQL: "PostgreSQL",
+    Supabase: "Supabase",
+    "Node.js": "Node.js",
+    Express: "Express",
+    "Socket.IO": "Socket.IO",
+    Drizzle: "Drizzle",
+    SaaS: "SaaS",
     CRM: "CRM",
     Automation: "Automation",
     SEO: "SEO",
-    "Lead Flow": "Lead Flow",
+    Omnichannel: "Omnichannel",
+    AI: "AI",
+    "White Label": "White Label",
+    "Landing Page": "Landing Page",
+    Dashboard: "Dashboard",
+    Franchise: "Franchise",
+    WhatsApp: "WhatsApp",
+    Email: "Email",
     UX: "UX",
   },
 };
@@ -104,6 +156,8 @@ const COPY = {
     projectsIntro:
       "Projetos pensados para converter, posicionar e sustentar operação com clareza visual e técnica.",
     projectSummary: "Resumo do projeto",
+    projectTechLabel: "Stacks & Tech",
+    projectSystemsLabel: "Tipos",
     projectVisit: "Visitar projeto",
     projectUnavailable: "Projeto privado",
     contactLabel: "CONTATO",
@@ -156,6 +210,8 @@ const COPY = {
     projectsIntro:
       "Projects designed to convert, position brands, and support real operations with visual and technical clarity.",
     projectSummary: "Project overview",
+    projectTechLabel: "Stacks & Tech",
+    projectSystemsLabel: "System Type",
     projectVisit: "Visit project",
     projectUnavailable: "Private project",
     contactLabel: "CONTACT",
@@ -195,15 +251,16 @@ const PROJECTS: Project[] = [
   {
     name: "Vetta",
     url: "https://vetta-devchells-projects.vercel.app",
-    type: {
+    title: {
       pt: "Landing Page",
       en: "Landing Page",
     },
     description: {
-      pt: "Projeto de Landing Page com tema diferente, para venda de infoproduto de Marketing Digital.",
-      en: "Landing page project with a distinct visual theme, built to sell a digital marketing infoproduct.",
+      pt: "Landing page editorial criada para vender um infoproduto de marketing com tese visual forte, copy modular e foco em conversão.",
+      en: "Editorial landing page created to sell a marketing infoproduct with a strong visual thesis, modular copy, and conversion focus.",
     },
-    stacks: ["Next.js", "TypeScript", "Vercel"],
+    technologies: ["Next.js", "TypeScript", "Vercel"],
+    systems: ["Landing Page", "SEO", "UX"],
     screenshots: [
       "/projects/vetta/vetta-01.png",
       "/projects/vetta/vetta-02.png",
@@ -216,21 +273,86 @@ const PROJECTS: Project[] = [
     name: "UltraRubber",
     url: "",
     locked: true,
-    type: {
+    title: {
       pt: "Landing Page & CRM",
       en: "Landing Page & CRM",
     },
     description: {
-      pt: "Landing Page & CRM para captação comercial com posicionamento industrial, automação e fluxo de leads estruturado.",
-      en: "Landing Page & CRM built for commercial lead capture, industrial positioning, automation and structured lead flow.",
+      pt: "Sistema de captação e gestão comercial com landing pública, login interno, fluxo de orçamentos, catálogo, métricas e operação industrial estruturada.",
+      en: "Lead capture and commercial operations system with a public landing, internal login, quote flow, catalog, metrics, and a structured industrial workflow.",
     },
-    stacks: ["CRM", "Automation", "SEO"],
+    technologies: ["Next.js", "Tailwind", "Supabase", "PostgreSQL"],
+    systems: ["CRM", "Automation", "SEO", "Dashboard"],
     screenshots: [
       "/projects/ultrarubber/ultrarubber-01.png",
       "/projects/ultrarubber/ultrarubber-02.png",
       "/projects/ultrarubber/ultrarubber-03.png",
       "/projects/ultrarubber/ultrarubber-04.png",
       "/projects/ultrarubber/ultrarubber-05.png",
+    ],
+  },
+  {
+    name: "VivianiCRM",
+    url: "",
+    locked: true,
+    title: {
+      pt: "CRM & Landing Page",
+      en: "CRM & Landing Page",
+    },
+    description: {
+      pt: "CRM single-tenant para operação de serviços, centralizando leads, agenda, financeiro, conteúdo público e automações de WhatsApp e e-mail em um único ecossistema.",
+      en: "Single-tenant CRM for a services operation, centralizing leads, scheduling, finance, public content, and WhatsApp/email automations in one ecosystem.",
+    },
+    technologies: ["Next.js", "Tailwind", "Prisma", "PostgreSQL"],
+    systems: ["CRM", "Landing Page", "WhatsApp", "Email"],
+    screenshots: [
+      "/projects/viviani/viviani-01.png",
+      "/projects/viviani/viviani-02.png",
+      "/projects/viviani/viviani-03.png",
+      "/projects/viviani/viviani-04.png",
+      "/projects/viviani/viviani-05.png",
+    ],
+  },
+  {
+    name: "TyviaHub",
+    url: "https://tyviahub.com.br/br",
+    title: {
+      pt: "Plataforma Omnichannel SaaS",
+      en: "Omnichannel SaaS Platform",
+    },
+    description: {
+      pt: "Suite multitenant para atendimento omnichannel, gestão operacional, IA, módulos white-label e expansão por produto dentro do ecossistema TyviaHub.",
+      en: "Multi-tenant suite for omnichannel support, operational management, AI, white-label modules, and product-based expansion across the TyviaHub ecosystem.",
+    },
+    technologies: ["React", "TypeScript", "Node.js", "PostgreSQL"],
+    systems: ["SaaS", "Omnichannel", "AI", "White Label"],
+    screenshots: [
+      "/projects/tyviahub/tyviahub-01.png",
+      "/projects/tyviahub/tyviahub-02.png",
+      "/projects/tyviahub/tyviahub-03.png",
+      "/projects/tyviahub/tyviahub-04.png",
+      "/projects/tyviahub/tyviahub-05.png",
+    ],
+  },
+  {
+    name: "AkiMais",
+    url: "https://akimais.com.br/",
+    title: {
+      pt: "SaaS de Franquias & White Label",
+      en: "Franchise SaaS & White Label",
+    },
+    description: {
+      pt: "Plataforma multi-tenant para operação master, franquias e portal do cliente, com onboarding, linhas, comissões, vendas e dashboards operacionais.",
+      en: "Multi-tenant platform for master operations, franchise management, and customer portals, with onboarding, lines, commissions, sales, and operational dashboards.",
+    },
+    technologies: ["Next.js", "TypeScript", "Drizzle", "PostgreSQL"],
+    systems: ["SaaS", "White Label", "Franchise", "Dashboard"],
+    screenshots: [
+      "/projects/akimais/akimais-01.png",
+      "/projects/akimais/akimais-02.png",
+      "/projects/akimais/akimais-03.png",
+      "/projects/akimais/akimais-04.png",
+      "/projects/akimais/akimais-05.png",
     ],
   },
 ];
@@ -343,6 +465,10 @@ const CODE_COPY = {
 
 function formatCodeKey(label: string, width = 18) {
   return `  ${label}:`.padEnd(width, " ");
+}
+
+function getProjectBadgeMeta(label: string) {
+  return PROJECT_BADGE_META[label] ?? { short: label.slice(0, 2).toUpperCase(), color: "#334155" };
 }
 
 function isValidEmail(value: string) {
@@ -631,6 +757,32 @@ function InstagramIcon() {
   );
 }
 
+function ProjectBadge({
+  badge,
+  label,
+}: {
+  badge: string;
+  label: string;
+}) {
+  const meta = getProjectBadgeMeta(badge);
+
+  return (
+    <span className={styles.stackBadge}>
+      <span
+        className={styles.stackBadgeMark}
+        style={{
+          backgroundColor: meta.color,
+          color: meta.color === "#facc15" ? "#111111" : "#ffffff",
+        }}
+        aria-hidden="true"
+      >
+        {meta.short}
+      </span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
 export function PortfolioApp() {
   const theme = useSyncExternalStore(subscribePreferences, getThemeSnapshot, getServerThemeSnapshot);
   const locale = useSyncExternalStore(subscribePreferences, getLocaleSnapshot, getServerLocaleSnapshot);
@@ -659,7 +811,7 @@ export function PortfolioApp() {
   const activeProject = PROJECTS[projectIndex];
   const heroFocusRotations = HERO_FOCUS_ROTATIONS[locale];
   const activeHeroFocus = heroFocusRotations[heroFocusIndex];
-  const stackLabels = STACK_LABELS[locale];
+  const badgeLabels = PROJECT_BADGE_LABELS[locale];
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -1370,23 +1522,36 @@ export function PortfolioApp() {
                 <div className={styles.projectMetaRow}>
                   <div className={styles.projectLead}>
                     <p className={styles.projectName}>{activeProject.name}</p>
-                    <p className={styles.projectType}>{activeProject.type[locale]}</p>
+                    <p className={styles.projectType}>{activeProject.title[locale]}</p>
                   </div>
 
                   <div className={styles.projectUtilities}>
-                    <div className={styles.projectStacks}>
-                      {activeProject.stacks.map((stack) => (
-                        <span key={stack} className={styles.stackBadge}>
-                          <Image
-                            className={styles.stackIcon}
-                            src={STACK_ICON_MAP[stack]}
-                            alt={stack}
-                            width={18}
-                            height={18}
-                          />
-                          <span>{stackLabels[stack] ?? stack}</span>
-                        </span>
-                      ))}
+                    <div className={styles.projectBadgeGroups}>
+                      <div className={styles.projectBadgeRow}>
+                        <p className={styles.projectBadgeLabel}>{copy.projectTechLabel}</p>
+                        <div className={styles.projectStacks}>
+                          {activeProject.technologies.map((badge) => (
+                            <ProjectBadge
+                              key={`${activeProject.name}-tech-${badge}`}
+                              badge={badge}
+                              label={badgeLabels[badge] ?? badge}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className={styles.projectBadgeRow}>
+                        <p className={styles.projectBadgeLabel}>{copy.projectSystemsLabel}</p>
+                        <div className={styles.projectStacks}>
+                          {activeProject.systems.map((badge) => (
+                            <ProjectBadge
+                              key={`${activeProject.name}-system-${badge}`}
+                              badge={badge}
+                              label={badgeLabels[badge] ?? badge}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
 
                     {activeProject.locked ? (
