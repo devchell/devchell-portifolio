@@ -1793,26 +1793,28 @@ export function PortfolioApp() {
                   <ArrowIcon direction="left" />
                 </button>
 
-                <div
-                  ref={projectRailViewportRef}
-                  className={styles.projectRailViewport}
-                  aria-label={copy.projectRailAria}
-                >
-                  <div className={styles.projectRail}>
-                    {PROJECTS.map((project, index) => (
-                      <button
-                        key={project.name}
-                        type="button"
-                        className={`${styles.projectRailButton} ${styles.themeFade}`}
-                        data-active={index === projectIndex}
-                        data-project-card-index={index}
-                        onClick={() => selectProject(index)}
-                        aria-pressed={index === projectIndex}
-                      >
-                        <span className={styles.projectRailName}>{project.name}</span>
-                        <span className={styles.projectRailType}>{project.title[locale]}</span>
-                      </button>
-                    ))}
+                <div className={styles.projectRailViewportFrame}>
+                  <div
+                    ref={projectRailViewportRef}
+                    className={styles.projectRailViewport}
+                    aria-label={copy.projectRailAria}
+                  >
+                    <div className={styles.projectRail}>
+                      {PROJECTS.map((project, index) => (
+                        <button
+                          key={project.name}
+                          type="button"
+                          className={`${styles.projectRailButton} ${styles.themeFade}`}
+                          data-active={index === projectIndex}
+                          data-project-card-index={index}
+                          onClick={() => selectProject(index)}
+                          aria-pressed={index === projectIndex}
+                        >
+                          <span className={styles.projectRailName}>{project.name}</span>
+                          <span className={styles.projectRailType}>{project.title[locale]}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

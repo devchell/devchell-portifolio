@@ -689,10 +689,46 @@
 }
 
 .projectRailShell {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: stretch;
   gap: 0.8rem;
+}
+
+.projectRailViewportFrame {
+  position: relative;
+  min-width: 0;
+  overflow: visible;
+}
+
+.projectRailViewportFrame::before,
+.projectRailViewportFrame::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  width: clamp(26px, 4vw, 54px);
+  pointer-events: none;
+}
+
+.projectRailViewportFrame::before {
+  left: 0;
+  background: linear-gradient(to right, var(--page-bg) 0%, rgba(245, 245, 245, 0) 100%);
+}
+
+.projectRailViewportFrame::after {
+  right: 0;
+  background: linear-gradient(to left, var(--page-bg) 0%, rgba(245, 245, 245, 0) 100%);
+}
+
+.portfolio[data-theme="dark"] .projectRailViewportFrame::before {
+  background: linear-gradient(to right, var(--page-bg) 0%, rgba(11, 11, 12, 0) 100%);
+}
+
+.portfolio[data-theme="dark"] .projectRailViewportFrame::after {
+  background: linear-gradient(to left, var(--page-bg) 0%, rgba(11, 11, 12, 0) 100%);
 }
 
 .projectRailViewport {
@@ -700,7 +736,7 @@
   position: relative;
   overflow-x: auto;
   overflow-y: visible;
-  padding: 0.12rem 0.08rem 0.45rem;
+  padding: 0.45rem 0.9rem 0.72rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
@@ -1880,6 +1916,7 @@
 
   .projectRailViewport {
     --project-rail-gap: 0.72rem;
+    padding-inline: 0.8rem;
   }
 
   .projectRail {
@@ -2037,7 +2074,7 @@
 
   .projectRailViewport {
     --project-rail-gap: 0.65rem;
-    padding-bottom: 0.25rem;
+    padding: 0.35rem 0.7rem 0.6rem;
   }
 
   .projectRailButton {
