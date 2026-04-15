@@ -688,26 +688,64 @@
   margin: 0 auto;
 }
 
-.projectRail {
+.projectRailShell {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(176px, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: stretch;
   gap: 0.8rem;
-  padding: 0.12rem 0.12rem 0.45rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
-.projectRail::-webkit-scrollbar {
+.projectRailViewport {
+  --project-rail-gap: 0.8rem;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0.12rem 0.08rem 0.45rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+}
+
+.projectRailViewport::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
 
+.projectRail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(210px, 20vw, 248px);
+  gap: var(--project-rail-gap);
+}
+
+.projectRailControl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: var(--radius-ui);
+  background: var(--panel-solid);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-pill);
+  cursor: pointer;
+  align-self: center;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
 .projectRailButton {
   display: grid;
-  gap: 0.32rem;
+  grid-template-rows: auto minmax(1.15rem, auto) minmax(2.3rem, auto);
+  gap: 0.38rem;
   min-width: 0;
+  min-height: 110px;
   padding: 0.95rem 1rem 1rem;
   border: 0;
   border-radius: var(--radius-ui);
@@ -716,6 +754,7 @@
   text-align: left;
   cursor: pointer;
   box-shadow: var(--shadow-pill);
+  scroll-snap-align: start;
   transition:
     transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
     background 220ms ease,
@@ -743,7 +782,7 @@
   color: var(--text-strong);
   font-size: 1rem;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
   letter-spacing: -0.03em;
 }
 
@@ -751,6 +790,11 @@
   color: var(--text-faint);
   font-size: 0.83rem;
   line-height: 1.35;
+  display: -webkit-box;
+  min-height: calc(1.35em * 2);
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .projectFeatured {
@@ -832,7 +876,7 @@
 
 .projectImage {
   object-fit: contain;
-  object-position: center top;
+  object-position: center center;
   background: var(--panel-muted);
 }
 
@@ -1383,37 +1427,117 @@
 }
 
 .contactButtons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  align-items: stretch;
   gap: 0.9rem;
 }
 
 .submitButton,
 .whatsappButton {
-  min-height: 54px;
-  padding: 0 1.2rem;
+  min-height: 74px;
+  padding: 0.95rem 1.15rem;
   border-radius: var(--radius-ui);
   border: 0;
-  font-size: 0.96rem;
-  font-weight: 700;
-  line-height: 1;
+  line-height: 1.1;
+  text-align: left;
+  text-decoration: none;
   cursor: pointer;
   box-shadow: var(--shadow-button);
 }
 
 .submitButton {
-  min-width: 180px;
-  background: var(--panel-solid);
-  color: var(--text-strong);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  display: grid;
+  justify-items: start;
+  gap: 0.28rem;
+  min-width: 0;
+  background: #101112;
+  color: #f3f4f6;
+  box-shadow:
+    0 16px 32px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.8;
 }
 
 .whatsappButton {
-  min-width: 240px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.82rem;
+  min-width: 0;
+  background: var(--panel-solid);
+  color: var(--text-strong);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(17, 24, 39, 0.04);
+}
+
+.submitTerminal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.46rem;
+  font-family: var(--font-terminal);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.submitPrompt {
+  color: #22c55e;
+}
+
+.submitCommand {
+  color: #f8fafc;
+}
+
+.submitMeta,
+.whatsappButtonMeta {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.submitMeta {
+  font-family: var(--font-geist-sans), sans-serif;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.whatsappButtonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
   background: #22c55e;
   color: #04130a;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 22px rgba(34, 197, 94, 0.22);
+}
+
+.whatsappButtonBody {
+  display: grid;
+  gap: 0.24rem;
+  min-width: 0;
+}
+
+.whatsappButtonTitle {
+  color: var(--text-strong);
+  font-size: 0.97rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.portfolio[data-theme="dark"] .whatsappButton {
+  background: var(--panel-muted);
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.24),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .footer {
@@ -1668,6 +1792,7 @@
 .primaryButton:hover,
 .secondaryButton:hover,
 .carouselArrow:hover,
+.projectRailControl:hover,
 .submitButton:hover,
 .whatsappButton:hover,
 .projectVisit:hover,
@@ -1685,6 +1810,7 @@
 
 .secondaryButton:hover,
 .projectVisit:hover,
+.projectRailControl:hover,
 .projectRailButton:hover,
 .iconButton:hover,
 .footerSocialLink:hover {
@@ -1716,6 +1842,7 @@
   .projectSlide,
   .projectImage,
   .projectFeatured,
+  .projectRailControl,
   .projectRailButton,
   .projectScreenshotDot,
   .stackBadge,
@@ -1723,6 +1850,7 @@
   .primaryButton,
   .secondaryButton,
   .carouselArrow,
+  .projectRailControl,
   .submitButton,
   .whatsappButton,
   .projectVisit,
@@ -1761,8 +1889,22 @@
     width: min(100%, 980px);
   }
 
+  .projectRailShell {
+    gap: 0.7rem;
+  }
+
+  .projectRailControl {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+  }
+
+  .projectRailViewport {
+    --project-rail-gap: 0.72rem;
+  }
+
   .projectRail {
-    grid-auto-columns: minmax(168px, 1fr);
+    grid-auto-columns: clamp(196px, 27vw, 226px);
   }
 
   .projectFeatured {
@@ -1792,7 +1934,7 @@
   }
 
   .contactButtons {
-    flex-wrap: wrap;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .aboutFacts {
@@ -1901,12 +2043,26 @@
   }
 
   .projectRail {
-    grid-auto-columns: minmax(150px, 1fr);
-    gap: 0.65rem;
+    grid-auto-columns: clamp(180px, 58vw, 212px);
+  }
+
+  .projectRailShell {
+    gap: 0.55rem;
+  }
+
+  .projectRailControl {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+  }
+
+  .projectRailViewport {
+    --project-rail-gap: 0.65rem;
     padding-bottom: 0.25rem;
   }
 
   .projectRailButton {
+    min-height: 104px;
     padding: 0.86rem 0.9rem 0.92rem;
   }
 
@@ -2059,8 +2215,7 @@
   }
 
   .contactButtons {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
   .footer {

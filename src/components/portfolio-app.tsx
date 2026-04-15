@@ -191,8 +191,10 @@ const COPY = {
     contactTitleSoft: "execução sem ruído.",
     contactDescription:
       "Descreva objetivo, contexto e escopo como se estivesse abrindo uma issue bem escrita. Eu organizo o resto.",
-    commit: "COMMIT",
+    submitCommand: "git push",
+    submitCaption: "enviar briefing",
     whatsapp: "Conversar no WhatsApp",
+    whatsappCaption: "resposta rápida",
     statusIdle: "Preencha o formulário e eu retorno pelo e-mail informado.",
     statusLoading: "Enviando sua solicitação...",
     statusSuccess: "Solicitação enviada. Vou responder pelo e-mail informado.",
@@ -211,6 +213,9 @@ const COPY = {
     heroScrollAria: "Ir para a próxima seção",
     previousProjectAria: "Projeto anterior",
     nextProjectAria: "Próximo projeto",
+    previousScreenshotAria: "Imagem anterior do projeto",
+    nextScreenshotAria: "Próxima imagem do projeto",
+    projectRailAria: "Lista horizontal de projetos",
     openProjectAria: "Abrir projeto",
     screenshotAlt: "captura",
     footerContact: "Contato",
@@ -245,8 +250,10 @@ const COPY = {
     contactTitleSoft: "clean execution.",
     contactDescription:
       "Describe the goal, context, and scope as if you were opening a well-written issue. I will structure the rest.",
-    commit: "COMMIT",
+    submitCommand: "git push",
+    submitCaption: "send brief",
     whatsapp: "Talk on WhatsApp",
+    whatsappCaption: "quick reply",
     statusIdle: "Fill out the form and I will reply to the email you provide.",
     statusLoading: "Sending your request...",
     statusSuccess: "Request sent. I will reply to your email shortly.",
@@ -265,6 +272,9 @@ const COPY = {
     heroScrollAria: "Go to the next section",
     previousProjectAria: "Previous project",
     nextProjectAria: "Next project",
+    previousScreenshotAria: "Previous project image",
+    nextScreenshotAria: "Next project image",
+    projectRailAria: "Horizontal project list",
     openProjectAria: "Open project",
     screenshotAlt: "screenshot",
     footerContact: "Contact",
@@ -743,6 +753,27 @@ function PhoneIcon() {
   );
 }
 
+function WhatsAppIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 3.8a7.9 7.9 0 0 0-6.9 12l-.9 4.4 4.5-.9A7.9 7.9 0 1 0 12 3.8Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.8 8.8c-.3.6-.4 1.3 0 1.9.8 1.4 1.9 2.5 3.3 3.3.6.4 1.3.3 1.9 0"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function GithubIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1011,6 +1042,7 @@ export function PortfolioApp() {
     website: "",
   });
   const scrollRef = useRef<HTMLDivElement>(null);
+  const projectRailViewportRef = useRef<HTMLDivElement>(null);
 
   const copy = COPY[locale];
   const codeCopy = CODE_COPY[locale];
@@ -1072,6 +1104,18 @@ export function PortfolioApp() {
     return () => {
       window.clearInterval(id);
     };
+  }, [projectIndex]);
+
+  useEffect(() => {
+    const railViewport = projectRailViewportRef.current;
+    if (!railViewport) return;
+
+    const activeCard = railViewport.querySelector<HTMLElement>(`[data-project-card-index="${projectIndex}"]`);
+    activeCard?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
   }, [projectIndex]);
 
   useEffect(() => {
@@ -1147,13 +1191,31 @@ export function PortfolioApp() {
     });
   }
 
-  function navigateProject(direction: "next" | "prev") {
-    const nextIndex =
-      direction === "next"
-        ? (projectIndex + 1) % PROJECTS.length
-        : (projectIndex - 1 + PROJECTS.length) % PROJECTS.length;
+  function navigateScreenshot(direction: "next" | "prev") {
+    const totalScreenshots = activeProject.screenshots.length;
 
-    selectProject(nextIndex);
+    setScreenshotIndex((current) =>
+      direction === "next"
+        ? (current + 1) % totalScreenshots
+        : (current - 1 + totalScreenshots) % totalScreenshots,
+    );
+  }
+
+  function scrollProjectRail(direction: "next" | "prev") {
+    const railViewport = projectRailViewportRef.current;
+    if (!railViewport) return;
+
+    const activeCard = railViewport.querySelector<HTMLElement>(`[data-project-card-index="${projectIndex}"]`);
+    const railTrack = railViewport.firstElementChild instanceof HTMLElement ? railViewport.firstElementChild : null;
+    const trackStyles = railTrack ? window.getComputedStyle(railTrack) : null;
+    const gap = Number.parseFloat(trackStyles?.columnGap || trackStyles?.gap || "0");
+    const cardWidth = activeCard?.getBoundingClientRect().width ?? 220;
+    const offset = (cardWidth + gap) * 2;
+
+    railViewport.scrollBy({
+      left: direction === "next" ? offset : -offset,
+      behavior: "smooth",
+    });
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -1305,6 +1367,7 @@ export function PortfolioApp() {
   const scopeCharacterCount = formValues.scope.length;
   const isScopeOverLimit = scopeCharacterCount > CONTACT_SCOPE_MAX_LENGTH;
   const projectSequence = String(projectIndex + 1).padStart(2, "0");
+  const totalProjects = String(PROJECTS.length).padStart(2, "0");
   const screenshotSequence = String(screenshotIndex + 1).padStart(2, "0");
   const screenshotTotal = String(activeProject.screenshots.length).padStart(2, "0");
 
@@ -1680,23 +1743,50 @@ export function PortfolioApp() {
             </div>
 
             <div className={`${styles.projectsShowcase} ${styles.reveal}`} data-reveal>
-              <div className={styles.projectRail} aria-label={copy.projectsLabel}>
-                {PROJECTS.map((project, index) => (
-                  <button
-                    key={project.name}
-                    type="button"
-                    className={`${styles.projectRailButton} ${styles.themeFade}`}
-                    data-active={index === projectIndex}
-                    onClick={() => selectProject(index)}
-                    aria-pressed={index === projectIndex}
-                  >
-                    <span className={styles.projectRailIndex}>
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className={styles.projectRailName}>{project.name}</span>
-                    <span className={styles.projectRailType}>{project.title[locale]}</span>
-                  </button>
-                ))}
+              <div className={styles.projectRailShell}>
+                <button
+                  type="button"
+                  className={`${styles.projectRailControl} ${styles.themeFade}`}
+                  onClick={() => scrollProjectRail("prev")}
+                  aria-label={copy.previousProjectAria}
+                >
+                  <ArrowIcon direction="left" />
+                </button>
+
+                <div
+                  ref={projectRailViewportRef}
+                  className={styles.projectRailViewport}
+                  aria-label={copy.projectRailAria}
+                >
+                  <div className={styles.projectRail}>
+                    {PROJECTS.map((project, index) => (
+                      <button
+                        key={project.name}
+                        type="button"
+                        className={`${styles.projectRailButton} ${styles.themeFade}`}
+                        data-active={index === projectIndex}
+                        data-project-card-index={index}
+                        onClick={() => selectProject(index)}
+                        aria-pressed={index === projectIndex}
+                      >
+                        <span className={styles.projectRailIndex}>
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className={styles.projectRailName}>{project.name}</span>
+                        <span className={styles.projectRailType}>{project.title[locale]}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className={`${styles.projectRailControl} ${styles.themeFade}`}
+                  onClick={() => scrollProjectRail("next")}
+                  aria-label={copy.nextProjectAria}
+                >
+                  <ArrowIcon />
+                </button>
               </div>
 
               <div
@@ -1707,7 +1797,7 @@ export function PortfolioApp() {
                   <div className={styles.projectMediaHeader}>
                     <span className={styles.projectMediaLabel}>{copy.projectsLabel}</span>
                     <span className={styles.projectMediaCount}>
-                      {projectSequence} / {String(PROJECTS.length).padStart(2, "0")}
+                      {projectSequence} / {totalProjects}
                     </span>
                   </div>
 
@@ -1715,8 +1805,8 @@ export function PortfolioApp() {
                     <button
                       type="button"
                       className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
-                      onClick={() => navigateProject("prev")}
-                      aria-label={copy.previousProjectAria}
+                      onClick={() => navigateScreenshot("prev")}
+                      aria-label={copy.previousScreenshotAria}
                     >
                       <ArrowIcon direction="left" />
                     </button>
@@ -1724,8 +1814,8 @@ export function PortfolioApp() {
                     <button
                       type="button"
                       className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
-                      onClick={() => navigateProject("next")}
-                      aria-label={copy.nextProjectAria}
+                      onClick={() => navigateScreenshot("next")}
+                      aria-label={copy.nextScreenshotAria}
                     >
                       <ArrowIcon />
                     </button>
@@ -2038,8 +2128,16 @@ export function PortfolioApp() {
                       <button
                         type="submit"
                         className={`${styles.submitButton} ${styles.themeFade}`}
+                        disabled={contactState === "loading"}
+                        aria-busy={contactState === "loading"}
                       >
-                        {copy.commit}
+                        <span className={styles.submitTerminal}>
+                          <span className={styles.submitPrompt} aria-hidden="true">
+                            $
+                          </span>
+                          <span className={styles.submitCommand}>{copy.submitCommand}</span>
+                        </span>
+                        <span className={styles.submitMeta}>{copy.submitCaption}</span>
                       </button>
 
                       <a
@@ -2048,7 +2146,13 @@ export function PortfolioApp() {
                         rel="noreferrer"
                         className={`${styles.whatsappButton} ${styles.themeFade}`}
                       >
-                        {copy.whatsapp}
+                        <span className={styles.whatsappButtonIcon} aria-hidden="true">
+                          <WhatsAppIcon />
+                        </span>
+                        <span className={styles.whatsappButtonBody}>
+                          <span className={styles.whatsappButtonTitle}>{copy.whatsapp}</span>
+                          <span className={styles.whatsappButtonMeta}>{copy.whatsappCaption}</span>
+                        </span>
                       </a>
                     </div>
                   </div>
