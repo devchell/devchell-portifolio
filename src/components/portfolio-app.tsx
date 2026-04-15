@@ -1140,18 +1140,20 @@ export function PortfolioApp() {
     persistPreference("portfolio-theme", theme === "light" ? "dark" : "light");
   }
 
-  function navigateProject(direction: "next" | "prev") {
+  function selectProject(nextIndex: number) {
     startTransition(() => {
-      setProjectIndex((current) => {
-        const next =
-          direction === "next"
-            ? (current + 1) % PROJECTS.length
-            : (current - 1 + PROJECTS.length) % PROJECTS.length;
-
-        setScreenshotIndex(0);
-        return next;
-      });
+      setProjectIndex(nextIndex);
+      setScreenshotIndex(0);
     });
+  }
+
+  function navigateProject(direction: "next" | "prev") {
+    const nextIndex =
+      direction === "next"
+        ? (projectIndex + 1) % PROJECTS.length
+        : (projectIndex - 1 + PROJECTS.length) % PROJECTS.length;
+
+    selectProject(nextIndex);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -1302,6 +1304,9 @@ export function PortfolioApp() {
   const selectedCountry = getCountryOption(formValues.countryCode);
   const scopeCharacterCount = formValues.scope.length;
   const isScopeOverLimit = scopeCharacterCount > CONTACT_SCOPE_MAX_LENGTH;
+  const projectSequence = String(projectIndex + 1).padStart(2, "0");
+  const screenshotSequence = String(screenshotIndex + 1).padStart(2, "0");
+  const screenshotTotal = String(activeProject.screenshots.length).padStart(2, "0");
 
   return (
     <div className={styles.portfolio} data-locale={locale} data-theme={theme}>
@@ -1674,62 +1679,116 @@ export function PortfolioApp() {
               <p className={styles.projectsIntroText}>{copy.projectsIntro}</p>
             </div>
 
-            <div className={`${styles.projectCard} ${styles.reveal}`} data-reveal>
-              <div className={styles.projectFrame}>
-                <button
-                  type="button"
-                  className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
-                  onClick={() => navigateProject("prev")}
-                  aria-label={copy.previousProjectAria}
-                >
-                  <ArrowIcon direction="left" />
-                </button>
-
-                <button
-                  type="button"
-                  className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
-                  onClick={() => navigateProject("next")}
-                  aria-label={copy.nextProjectAria}
-                >
-                  <ArrowIcon />
-                </button>
-
-                {!activeProject.locked ? (
-                  <a
-                    href={activeProject.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.projectLinkOverlay}
-                    aria-label={`${copy.openProjectAria} ${activeProject.name}`}
-                  />
-                ) : null}
-
-                {activeProject.screenshots.map((shot, index) => (
-                  <div
-                    key={shot}
-                    className={styles.projectSlide}
-                    data-active={index === screenshotIndex}
+            <div className={`${styles.projectsShowcase} ${styles.reveal}`} data-reveal>
+              <div className={styles.projectRail} aria-label={copy.projectsLabel}>
+                {PROJECTS.map((project, index) => (
+                  <button
+                    key={project.name}
+                    type="button"
+                    className={`${styles.projectRailButton} ${styles.themeFade}`}
+                    data-active={index === projectIndex}
+                    onClick={() => selectProject(index)}
+                    aria-pressed={index === projectIndex}
                   >
-                    <Image
-                      className={styles.projectImage}
-                      src={shot}
-                      alt={`${activeProject.name} ${copy.screenshotAlt} ${index + 1}`}
-                      fill
-                      quality={95}
-                      sizes="(max-width: 1040px) calc(100vw - 32px), 920px"
-                    />
-                  </div>
+                    <span className={styles.projectRailIndex}>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className={styles.projectRailName}>{project.name}</span>
+                    <span className={styles.projectRailType}>{project.title[locale]}</span>
+                  </button>
                 ))}
               </div>
 
               <div
                 key={`${activeProject.name}-${locale}`}
-                className={`${styles.projectBase} ${styles.themeFade}`}
+                className={`${styles.projectFeatured} ${styles.themeFade}`}
               >
-                <div className={styles.projectMetaRow}>
-                  <div className={styles.projectLead}>
-                    <p className={styles.projectName}>{activeProject.name}</p>
-                    <p className={styles.projectType}>{activeProject.title[locale]}</p>
+                <div className={styles.projectMediaPanel}>
+                  <div className={styles.projectMediaHeader}>
+                    <span className={styles.projectMediaLabel}>{copy.projectsLabel}</span>
+                    <span className={styles.projectMediaCount}>
+                      {projectSequence} / {String(PROJECTS.length).padStart(2, "0")}
+                    </span>
+                  </div>
+
+                  <div className={styles.projectFrame}>
+                    <button
+                      type="button"
+                      className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
+                      onClick={() => navigateProject("prev")}
+                      aria-label={copy.previousProjectAria}
+                    >
+                      <ArrowIcon direction="left" />
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
+                      onClick={() => navigateProject("next")}
+                      aria-label={copy.nextProjectAria}
+                    >
+                      <ArrowIcon />
+                    </button>
+
+                    {!activeProject.locked ? (
+                      <a
+                        href={activeProject.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={styles.projectLinkOverlay}
+                        aria-label={`${copy.openProjectAria} ${activeProject.name}`}
+                      />
+                    ) : null}
+
+                    {activeProject.screenshots.map((shot, index) => (
+                      <div
+                        key={shot}
+                        className={styles.projectSlide}
+                        data-active={index === screenshotIndex}
+                      >
+                        <Image
+                          className={styles.projectImage}
+                          src={shot}
+                          alt={`${activeProject.name} ${copy.screenshotAlt} ${index + 1}`}
+                          fill
+                          quality={100}
+                          priority={index === 0 && projectIndex === 0}
+                          sizes="(max-width: 760px) calc(100vw - 56px), (max-width: 1100px) calc(100vw - 72px), 720px"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className={styles.projectFrameFooter}>
+                    <div className={styles.projectScreenshotDots} aria-hidden="true">
+                      {activeProject.screenshots.map((shot, index) => (
+                        <span
+                          key={`${shot}-dot`}
+                          className={styles.projectScreenshotDot}
+                          data-active={index === screenshotIndex}
+                        />
+                      ))}
+                    </div>
+                    <span className={styles.projectScreenshotCount}>
+                      {screenshotSequence} / {screenshotTotal}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.projectAside}>
+                  <div className={styles.projectMetaRow}>
+                    <div className={styles.projectLead}>
+                      <span className={styles.projectSpotlightIndex}>{projectSequence}</span>
+                      <p className={styles.projectName}>{activeProject.name}</p>
+                      <p className={styles.projectType}>{activeProject.title[locale]}</p>
+                    </div>
+
+                    <div className={styles.projectSummary}>
+                      <p className={styles.projectSummaryTitle}>{copy.projectSummary}</p>
+                      <p className={styles.projectSummaryText}>
+                        {activeProject.description[locale]}
+                      </p>
+                    </div>
                   </div>
 
                   <div className={styles.projectUtilities}>
@@ -1777,15 +1836,6 @@ export function PortfolioApp() {
                       </a>
                     )}
                   </div>
-                </div>
-
-                <div className={styles.projectRule} />
-
-                <div className={styles.projectSummary}>
-                  <p className={styles.projectSummaryTitle}>{copy.projectSummary}</p>
-                  <p className={styles.projectSummaryText}>
-                    {activeProject.description[locale]}
-                  </p>
                 </div>
               </div>
             </div>
