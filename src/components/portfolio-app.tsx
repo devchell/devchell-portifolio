@@ -1057,6 +1057,7 @@ export function PortfolioApp() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const projectRailViewportRef = useRef<HTMLDivElement>(null);
   const hasCenteredProjectRailRef = useRef(false);
+  const countryCodePickerRef = useRef<HTMLDivElement>(null);
 
   const copy = COPY[locale];
   const codeCopy = CODE_COPY[locale];
@@ -1068,6 +1069,31 @@ export function PortfolioApp() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  useEffect(() => {
+    if (!isCountryMenuOpen) return;
+
+    const closeCountryMenu = (event: PointerEvent) => {
+      const picker = countryCodePickerRef.current;
+      if (picker?.contains(event.target as Node)) return;
+
+      setIsCountryMenuOpen(false);
+    };
+
+    const closeCountryMenuWithKeyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsCountryMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", closeCountryMenu, true);
+    document.addEventListener("keydown", closeCountryMenuWithKeyboard);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeCountryMenu, true);
+      document.removeEventListener("keydown", closeCountryMenuWithKeyboard);
+    };
+  }, [isCountryMenuOpen]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(
@@ -2062,12 +2088,16 @@ export function PortfolioApp() {
                         <span className={styles.editorStringQuote}>{'"'}</span>
                         <span className={styles.editorPunctuation}>,</span>
                       </label>
-                      <div className={`${styles.codeFieldRow} ${styles.codeFieldPhoneRow}`}>
+                      <div
+                        className={`${styles.codeFieldRow} ${styles.codeFieldPhoneRow} ${
+                          isCountryMenuOpen ? styles.codeFieldMenuOpen : ""
+                        }`}
+                      >
                         <span className={styles.codeLabel}>
                           {formatCodeKey(codeCopy.contact.whatsappKey)}
                         </span>
                         <span className={styles.editorStringQuote}>{'"'}</span>
-                        <div className={styles.countryCodePicker}>
+                        <div className={styles.countryCodePicker} ref={countryCodePickerRef}>
                           <input
                             type="hidden"
                             name="countryCode"

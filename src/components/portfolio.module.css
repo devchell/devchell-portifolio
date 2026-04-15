@@ -1195,6 +1195,11 @@
   background: var(--code-surface);
 }
 
+.codeFieldMenuOpen {
+  z-index: 120;
+  background: var(--code-surface);
+}
+
 
 .codeLabel {
   white-space: pre;
@@ -1223,6 +1228,7 @@
   position: relative;
   flex: 0 0 5.8rem;
   width: 5.8rem;
+  z-index: 130;
 }
 
 .countryCodeTrigger,
@@ -1285,7 +1291,7 @@
   position: absolute;
   top: calc(100% + 0.45rem);
   left: 0;
-  z-index: 80;
+  z-index: 140;
   display: grid;
   gap: 0.18rem;
   width: 6.3rem;
@@ -2191,6 +2197,7 @@
     grid-template-areas:
       "label label label label label"
       "open picker field close comma";
+    align-items: center;
   }
 
   .codeFieldRow > .codeInlineInput,
@@ -2221,10 +2228,22 @@
 
   .codeFieldPhoneRow > .countryCodePicker {
     grid-area: picker;
+    align-self: center;
   }
 
   .codeFieldPhoneRow > .codeInlineInput {
     grid-area: field;
+    align-self: center;
+  }
+
+  .codeFieldPhoneRow .countryCodeTrigger {
+    min-height: 1.72rem;
+    transform: none;
+  }
+
+  .codeFieldPhoneRow .countryCodeTrigger:hover,
+  .codeFieldPhoneRow .countryCodeTrigger[aria-expanded="true"] {
+    transform: none;
   }
 
   .codeFieldStandardRow > .editorStringQuote:last-of-type,
