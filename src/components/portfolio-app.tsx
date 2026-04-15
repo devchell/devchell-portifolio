@@ -1056,6 +1056,7 @@ export function PortfolioApp() {
   });
   const scrollRef = useRef<HTMLDivElement>(null);
   const projectRailViewportRef = useRef<HTMLDivElement>(null);
+  const hasCenteredProjectRailRef = useRef(false);
 
   const copy = COPY[locale];
   const codeCopy = CODE_COPY[locale];
@@ -1152,11 +1153,18 @@ export function PortfolioApp() {
     if (!railViewport) return;
 
     const activeCard = railViewport.querySelector<HTMLElement>(`[data-project-card-index="${projectIndex}"]`);
-    activeCard?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
+    if (!activeCard) return;
+
+    // Keep the project rail centered without letting the browser scroll the main page.
+    const maxScrollLeft = Math.max(0, railViewport.scrollWidth - railViewport.clientWidth);
+    const targetLeft = activeCard.offsetLeft - (railViewport.clientWidth - activeCard.offsetWidth) / 2;
+    const nextScrollLeft = Math.min(Math.max(targetLeft, 0), maxScrollLeft);
+
+    railViewport.scrollTo({
+      left: nextScrollLeft,
+      behavior: hasCenteredProjectRailRef.current ? "smooth" : "auto",
     });
+    hasCenteredProjectRailRef.current = true;
   }, [projectIndex]);
 
   useEffect(() => {
@@ -2018,7 +2026,7 @@ export function PortfolioApp() {
                         <span className={styles.editorOperator}> = </span>
                         <span className={styles.editorPunctuation}>{"{"}</span>
                       </div>
-                      <label className={styles.codeFieldRow}>
+                      <label className={`${styles.codeFieldRow} ${styles.codeFieldStandardRow}`}>
                         <span className={styles.codeLabel}>
                           {formatCodeKey(codeCopy.contact.nameKey)}
                         </span>
@@ -2036,7 +2044,7 @@ export function PortfolioApp() {
                         <span className={styles.editorStringQuote}>{'"'}</span>
                         <span className={styles.editorPunctuation}>,</span>
                       </label>
-                      <label className={styles.codeFieldRow}>
+                      <label className={`${styles.codeFieldRow} ${styles.codeFieldStandardRow}`}>
                         <span className={styles.codeLabel}>
                           {formatCodeKey(codeCopy.contact.emailKey)}
                         </span>
@@ -2054,7 +2062,7 @@ export function PortfolioApp() {
                         <span className={styles.editorStringQuote}>{'"'}</span>
                         <span className={styles.editorPunctuation}>,</span>
                       </label>
-                      <div className={styles.codeFieldRow}>
+                      <div className={`${styles.codeFieldRow} ${styles.codeFieldPhoneRow}`}>
                         <span className={styles.codeLabel}>
                           {formatCodeKey(codeCopy.contact.whatsappKey)}
                         </span>
