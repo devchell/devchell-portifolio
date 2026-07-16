@@ -195,6 +195,7 @@ const COPY = {
     projectSystemsLabel: "Tipos",
     projectVisit: "Visitar projeto",
     projectUnavailable: "Projeto privado",
+    projectPrivateTag: "acesso privado",
     contactLabel: "CONTATO",
     contactTitleStrong: "Briefing em código,",
     contactTitleSoft: "execução sem ruído.",
@@ -256,6 +257,7 @@ const COPY = {
     projectSystemsLabel: "System Type",
     projectVisit: "Visit project",
     projectUnavailable: "Private project",
+    projectPrivateTag: "private access",
     contactLabel: "CONTACT",
     contactTitleStrong: "Code-like brief,",
     contactTitleSoft: "clean execution.",
@@ -298,6 +300,27 @@ const COPY = {
 
 const PROJECTS: Project[] = [
   {
+    name: "Tevio",
+    url: "https://tevio.com.br/",
+    title: {
+      pt: "Plataforma de Cloud & Hosting",
+      en: "Cloud & Hosting Platform",
+    },
+    description: {
+      pt: "Plataforma de hospedagem e infraestrutura (VPS, cloud, dedicado e colocation) com catálogo, checkout, portal do cliente e operação comercial ponta a ponta.",
+      en: "Hosting and infrastructure platform (VPS, cloud, dedicated, and colocation) with catalog, checkout, customer portal, and end-to-end commercial operations.",
+    },
+    technologies: ["React", "Next.js", "Supabase"],
+    systems: ["SaaS", "Automation", "SEO"],
+    screenshots: [
+      "/projects/tevio/tevioadmin-01.png",
+      "/projects/tevio/tevio-01.png",
+      "/projects/tevio/tevio-02.png",
+      "/projects/tevio/tevio-03.png",
+      "/projects/tevio/tevio-04.png",
+    ],
+  },
+  {
     name: "Vetta",
     url: "https://vetta-devchells-projects.vercel.app/",
     title: {
@@ -319,9 +342,29 @@ const PROJECTS: Project[] = [
     ],
   },
   {
+    name: "VoidPlugins",
+    url: "https://voidplugins.com.br/",
+    title: {
+      pt: "Marketplace de Plugins Minecraft",
+      en: "Minecraft Plugins Marketplace",
+    },
+    description: {
+      pt: "Loja e ecossistema para venda de plugins premium de Minecraft — catálogo, licenciamento, contas de cliente, painel admin e entrega/atualização automática de versões.",
+      en: "Store and ecosystem for selling premium Minecraft plugins — catalog, licensing, customer accounts, admin panel, and automated version delivery and updates.",
+    },
+    technologies: ["Next.js", "Supabase", "PostgreSQL"],
+    systems: ["SaaS", "Automation", "Dashboard"],
+    screenshots: [
+      "/projects/voidplugins/voidadmin-01.png",
+      "/projects/voidplugins/voidadmin-02.png",
+      "/projects/voidplugins/voidadmin-03.png",
+      "/projects/voidplugins/voidplugins-01.png",
+      "/projects/voidplugins/voidplugins-02.png",
+    ],
+  },
+  {
     name: "UltraRubber",
-    url: "",
-    locked: true,
+    url: "https://ultrarubber.vercel.app/",
     title: {
       pt: "Landing Page & CRM",
       en: "Landing Page & CRM",
@@ -363,45 +406,24 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    name: "TyviaHub",
-    url: "https://tyviahub.com.br/br",
+    name: "TyviaTalk",
+    url: "https://tyviatalk.com/",
     title: {
       pt: "Plataforma Omnichannel SaaS",
       en: "Omnichannel SaaS Platform",
     },
     description: {
-      pt: "Suite multitenant para atendimento omnichannel, gestão operacional, IA, módulos white-label e expansão por produto dentro do ecossistema TyviaHub.",
-      en: "Multi-tenant suite for omnichannel support, operational management, AI, white-label modules, and product-based expansion across the TyviaHub ecosystem.",
+      pt: "Suite multitenant para atendimento omnichannel, gestão operacional, IA, módulos white-label e expansão por produto dentro do ecossistema TyviaTalk.",
+      en: "Multi-tenant suite for omnichannel support, operational management, AI, white-label modules, and product-based expansion across the TyviaTalk ecosystem.",
     },
     technologies: ["React", "Node.js", "PostgreSQL"],
     systems: ["SaaS", "Omnichannel", "AI"],
     screenshots: [
-      "/projects/tyviahub/tyviahub-01.png",
-      "/projects/tyviahub/tyviahub-02.png",
-      "/projects/tyviahub/tyviahub-03.png",
-      "/projects/tyviahub/tyviahub-04.png",
-      "/projects/tyviahub/tyviahub-05.png",
-    ],
-  },
-  {
-    name: "AkiMais",
-    url: "https://akimais.com.br/",
-    title: {
-      pt: "SaaS de Franquias & White Label",
-      en: "Franchise SaaS & White Label",
-    },
-    description: {
-      pt: "Plataforma multi-tenant para operação master, franquias e portal do cliente, com onboarding, linhas, comissões, vendas e dashboards operacionais.",
-      en: "Multi-tenant platform for master operations, franchise management, and customer portals, with onboarding, lines, commissions, sales, and operational dashboards.",
-    },
-    technologies: ["Next.js", "TypeScript", "PostgreSQL"],
-    systems: ["SaaS", "Franchise", "White Label"],
-    screenshots: [
-      "/projects/akimais/akimais-01.png",
-      "/projects/akimais/akimais-02.png",
-      "/projects/akimais/akimais-03.png",
-      "/projects/akimais/akimais-04.png",
-      "/projects/akimais/akimais-05.png",
+      "/projects/tyviatalk/tyviatalk-01.png",
+      "/projects/tyviatalk/tyviatalk-02.png",
+      "/projects/tyviatalk/tyviatalk-03.png",
+      "/projects/tyviatalk/tyviatalk-04.png",
+      "/projects/tyviatalk/tyviatalk-05.png",
     ],
   },
 ];
@@ -518,6 +540,14 @@ function formatCodeKey(label: string, width = 18) {
 
 function getProjectBadgeMeta(label: string) {
   return PROJECT_BADGE_META[label] ?? { icon: "generic" };
+}
+
+function getProjectHost(url: string) {
+  try {
+    return new URL(url).host.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
 }
 
 function isValidEmail(value: string) {
@@ -697,6 +727,30 @@ function ExternalIcon() {
         strokeWidth="1.7"
         strokeLinecap="round"
       />
+    </svg>
+  );
+}
+
+function StageGlobeGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M3.6 12h16.8M12 3.5c2.3 2.4 3.5 5.3 3.5 8.5s-1.2 6.1-3.5 8.5c-2.3-2.4-3.5-5.3-3.5-8.5s1.2-6.1 3.5-8.5Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function StageLockGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2.2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="12" cy="15" r="1.15" fill="currentColor" />
     </svg>
   );
 }
@@ -1062,6 +1116,7 @@ export function PortfolioApp() {
   const copy = COPY[locale];
   const codeCopy = CODE_COPY[locale];
   const activeProject = PROJECTS[projectIndex];
+  const activeProjectHost = getProjectHost(activeProject.url);
   const heroFocusRotations = HERO_FOCUS_ROTATIONS[locale];
   const activeHeroFocus = heroFocusRotations[heroFocusIndex];
   const badgeLabels = PROJECT_BADGE_LABELS[locale];
@@ -1867,52 +1922,73 @@ export function PortfolioApp() {
                 className={`${styles.projectFeatured} ${styles.themeFade}`}
               >
                 <div className={styles.projectMediaPanel}>
-                  <div className={styles.projectFrame}>
-                    <button
-                      type="button"
-                      className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
-                      onClick={() => navigateScreenshot("prev")}
-                      aria-label={copy.previousScreenshotAria}
-                    >
-                      <ArrowIcon direction="left" />
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
-                      onClick={() => navigateScreenshot("next")}
-                      aria-label={copy.nextScreenshotAria}
-                    >
-                      <ArrowIcon />
-                    </button>
-
-                    {!activeProject.locked ? (
-                      <a
-                        href={activeProject.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={styles.projectLinkOverlay}
-                        aria-label={`${copy.openProjectAria} ${activeProject.name}`}
-                      />
-                    ) : null}
-
-                    {activeProject.screenshots.map((shot, index) => (
-                      <div
-                        key={shot}
-                        className={styles.projectSlide}
-                        data-active={index === screenshotIndex}
+                  <div className={styles.projectStage}>
+                    <div className={styles.projectStageBar}>
+                      <span className={styles.projectStageDots} aria-hidden="true">
+                        <span className={styles.editorDot} data-tone="red" />
+                        <span className={styles.editorDot} data-tone="yellow" />
+                        <span className={styles.editorDot} data-tone="green" />
+                      </span>
+                      <span
+                        className={styles.projectStageAddress}
+                        data-locked={activeProject.locked ? "true" : undefined}
                       >
-                        <Image
-                          className={styles.projectImage}
-                          src={shot}
-                          alt={`${activeProject.name} ${copy.screenshotAlt} ${index + 1}`}
-                          fill
-                          quality={100}
-                          priority={index === 0 && projectIndex === 0}
-                          sizes="(max-width: 760px) calc(100vw - 56px), (max-width: 1100px) calc(100vw - 72px), 720px"
+                        {activeProject.locked ? <StageLockGlyph /> : <StageGlobeGlyph />}
+                        <span className={styles.projectStageAddressText}>
+                          {activeProject.locked
+                            ? copy.projectPrivateTag
+                            : activeProjectHost || activeProject.name.toLowerCase()}
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className={styles.projectFrame}>
+                      <button
+                        type="button"
+                        className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
+                        onClick={() => navigateScreenshot("prev")}
+                        aria-label={copy.previousScreenshotAria}
+                      >
+                        <ArrowIcon direction="left" />
+                      </button>
+
+                      <button
+                        type="button"
+                        className={`${styles.carouselArrow} ${styles.carouselNext} ${styles.themeFade}`}
+                        onClick={() => navigateScreenshot("next")}
+                        aria-label={copy.nextScreenshotAria}
+                      >
+                        <ArrowIcon />
+                      </button>
+
+                      {!activeProject.locked ? (
+                        <a
+                          href={activeProject.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={styles.projectLinkOverlay}
+                          aria-label={`${copy.openProjectAria} ${activeProject.name}`}
                         />
-                      </div>
-                    ))}
+                      ) : null}
+
+                      {activeProject.screenshots.map((shot, index) => (
+                        <div
+                          key={shot}
+                          className={styles.projectSlide}
+                          data-active={index === screenshotIndex}
+                        >
+                          <Image
+                            className={styles.projectImage}
+                            src={shot}
+                            alt={`${activeProject.name} ${copy.screenshotAlt} ${index + 1}`}
+                            fill
+                            quality={100}
+                            priority={index === 0 && projectIndex === 0}
+                            sizes="(max-width: 760px) calc(100vw - 56px), (max-width: 1100px) calc(100vw - 72px), 720px"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div className={styles.projectFrameFooter}>
@@ -1925,6 +2001,11 @@ export function PortfolioApp() {
                         />
                       ))}
                     </div>
+                    <span className={styles.projectShotCounter} aria-hidden="true">
+                      {String(screenshotIndex + 1).padStart(2, "0")}
+                      {" / "}
+                      {String(activeProject.screenshots.length).padStart(2, "0")}
+                    </span>
                   </div>
                 </div>
 
