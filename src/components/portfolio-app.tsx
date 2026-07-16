@@ -398,11 +398,11 @@ const PROJECTS: Project[] = [
     technologies: ["Next.js", "Prisma", "PostgreSQL"],
     systems: ["CRM", "WhatsApp", "Email"],
     screenshots: [
-      "/projects/viviani/viviani-01.png",
+      "/projects/viviani/vivpainel-01.png",
+      "/projects/viviani/vivpainel-03.png",
+      "/projects/viviani/vivpainel-02.png",
+      "/projects/viviani/vivpainel-04.png",
       "/projects/viviani/viviani-02.png",
-      "/projects/viviani/viviani-03.png",
-      "/projects/viviani/viviani-04.png",
-      "/projects/viviani/viviani-05.png",
     ],
   },
   {
