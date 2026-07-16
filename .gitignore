@@ -25,6 +25,9 @@
 *.pem
 tmp/
 
+# scripts audit artifacts
+scripts/audit-shots/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

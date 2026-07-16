@@ -301,17 +301,17 @@ const COPY = {
 const PROJECTS: Project[] = [
   {
     name: "Tevio",
-    url: "https://tevio.com.br/",
+    url: "https://tevio.com.br",
     title: {
-      pt: "Plataforma de Cloud & Hosting",
-      en: "Cloud & Hosting Platform",
+      pt: "Plataforma de Infraestrutura",
+      en: "Infrastructure Platform",
     },
     description: {
-      pt: "Plataforma de hospedagem e infraestrutura (VPS, cloud, dedicado e colocation) com catálogo, checkout, portal do cliente e operação comercial ponta a ponta.",
-      en: "Hosting and infrastructure platform (VPS, cloud, dedicated, and colocation) with catalog, checkout, customer portal, and end-to-end commercial operations.",
+      pt: "Plataforma de infraestrutura cloud para times que precisam de performance real, com landing editorial, portal de clientes, onboarding automatizado e gestão de planos VPS, Dedicado e Colocation.",
+      en: "Cloud infrastructure platform for teams needing real performance, with an editorial landing, client portal, automated onboarding, and VPS, Dedicated, and Colocation plan management.",
     },
-    technologies: ["React", "Next.js", "Supabase"],
-    systems: ["SaaS", "Automation", "SEO"],
+    technologies: ["React", "TypeScript", "Supabase", "Tailwind"],
+    systems: ["Landing Page", "Dashboard", "SaaS"],
     screenshots: [
       "/projects/tevio/tevioadmin-01.png",
       "/projects/tevio/tevio-01.png",

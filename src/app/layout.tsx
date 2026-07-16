@@ -17,7 +17,7 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "DevChell | Desenvolvedor Web & Sistemas",
   description:
-    "Portifolio de Joao Vitor Rodrigues, FullStack focado em SaaS, CRM, automacoes, landing pages e IA.",
+    "Portfólio de João Vitor Rodrigues, desenvolvedor FullStack focado em SaaS, CRM, automações, landing pages e IA.",
 };
 
 export default function RootLayout({
