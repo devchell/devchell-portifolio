@@ -1952,6 +1952,17 @@ export function PortfolioApp() {
                           onClick={() => selectProject(index)}
                           aria-pressed={index === projectIndex}
                         >
+                          <span className={styles.projectRailTop} aria-hidden="true">
+                            <span className={styles.projectRailIndex}>
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+                            <span
+                              className={styles.projectRailStatus}
+                              data-locked={project.locked ? "true" : undefined}
+                            >
+                              {project.locked ? <StageLockGlyph /> : <StageGlobeGlyph />}
+                            </span>
+                          </span>
                           <span className={styles.projectRailName}>{project.name}</span>
                           <span className={styles.projectRailType}>{project.title[locale]}</span>
                         </button>
@@ -2076,51 +2087,60 @@ export function PortfolioApp() {
                 </div>
 
                 <div className={styles.projectAside}>
-                  <div className={styles.projectMetaRow}>
-                    <div className={styles.projectLead}>
-                      <p className={styles.projectName}>{activeProject.name}</p>
-                      <p className={styles.projectType}>{activeProject.title[locale]}</p>
+                  <div className={styles.projectAsideHead}>
+                    <div className={styles.projectEyebrow} aria-hidden="true">
+                      <span className={styles.projectEyebrowIndex}>
+                        {String(projectIndex + 1).padStart(2, "0")}
+                      </span>
+                      <span className={styles.projectEyebrowSep} />
+                      <span className={styles.projectEyebrowText}>
+                        {activeProject.systems[0]}
+                      </span>
+                      <span
+                        className={styles.projectEyebrowStatus}
+                        data-locked={activeProject.locked ? "true" : undefined}
+                      >
+                        {activeProject.locked ? copy.projectPrivateTag : activeProjectHost}
+                      </span>
                     </div>
+                    <h3 className={styles.projectName}>{activeProject.name}</h3>
+                    <p className={styles.projectType}>{activeProject.title[locale]}</p>
+                  </div>
 
-                    <div className={styles.projectSummary}>
-                      <p className={styles.projectSummaryTitle}>{copy.projectSummary}</p>
-                      <p className={styles.projectSummaryText}>
-                        {activeProject.description[locale]}
-                      </p>
+                  <div className={styles.projectAsideBody}>
+                    <p className={styles.projectSummaryText}>
+                      {activeProject.description[locale]}
+                    </p>
+
+                    <div className={styles.projectStack}>
+                      <span className={styles.projectStackLabel}>Stack</span>
+                      <div className={styles.projectBadgeRow}>
+                        {[...activeProject.technologies, ...activeProject.systems].map(
+                          (badge, badgeIndex) => (
+                            <ProjectBadge
+                              key={`${activeProject.name}-badge-${badge}-${badgeIndex}`}
+                              badge={badge}
+                              label={badgeLabels[badge] ?? badge}
+                            />
+                          ),
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <div className={styles.projectUtilities}>
-                    <div className={styles.projectBadgeGroups}>
-                      <div className={styles.projectBadgeRow} aria-label={copy.projectTechLabel}>
-                        {activeProject.technologies.map((badge) => (
-                          <ProjectBadge
-                            key={`${activeProject.name}-tech-${badge}`}
-                            badge={badge}
-                            label={badgeLabels[badge] ?? badge}
-                          />
-                        ))}
-                      </div>
-
-                      <div className={styles.projectBadgeRow} aria-label={copy.projectSystemsLabel}>
-                        {activeProject.systems.map((badge) => (
-                          <ProjectBadge
-                            key={`${activeProject.name}-system-${badge}`}
-                            badge={badge}
-                            label={badgeLabels[badge] ?? badge}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
+                  <div className={styles.projectAsideFoot}>
                     {activeProject.locked ? (
                       <button
                         type="button"
                         className={`${styles.projectVisit} ${styles.projectVisitLocked}`}
                         disabled
                       >
-                        <span>{copy.projectUnavailable}</span>
-                        <ExternalIcon />
+                        <span className={styles.projectVisitLabel}>
+                          {copy.projectUnavailable}
+                        </span>
+                        <span className={styles.projectVisitIcon}>
+                          <StageLockGlyph />
+                        </span>
                       </button>
                     ) : (
                       <a
@@ -2130,8 +2150,10 @@ export function PortfolioApp() {
                         className={styles.projectVisit}
                         aria-label={`${copy.openProjectAria} ${activeProject.name}`}
                       >
-                        <span>{copy.projectVisit}</span>
-                        <ExternalIcon />
+                        <span className={styles.projectVisitLabel}>{copy.projectVisit}</span>
+                        <span className={styles.projectVisitIcon}>
+                          <ExternalIcon />
+                        </span>
                       </a>
                     )}
                   </div>
