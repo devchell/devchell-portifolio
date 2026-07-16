@@ -419,11 +419,11 @@ const PROJECTS: Project[] = [
     technologies: ["React", "Node.js", "PostgreSQL"],
     systems: ["SaaS", "Omnichannel", "AI"],
     screenshots: [
+      "/projects/tyviatalk/tyviaadmin-01.png",
+      "/projects/tyviatalk/tyviaadmin-02.png",
       "/projects/tyviatalk/tyviatalk-01.png",
       "/projects/tyviatalk/tyviatalk-02.png",
       "/projects/tyviatalk/tyviatalk-03.png",
-      "/projects/tyviatalk/tyviatalk-04.png",
-      "/projects/tyviatalk/tyviatalk-05.png",
     ],
   },
 ];
