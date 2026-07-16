@@ -355,11 +355,11 @@ const PROJECTS: Project[] = [
     technologies: ["Next.js", "Supabase", "PostgreSQL"],
     systems: ["SaaS", "Automation", "Dashboard"],
     screenshots: [
-      "/projects/voidplugins/voidadmin-01.png",
-      "/projects/voidplugins/voidadmin-02.png",
-      "/projects/voidplugins/voidadmin-03.png",
       "/projects/voidplugins/voidplugins-01.png",
       "/projects/voidplugins/voidplugins-02.png",
+      "/projects/voidplugins/voidplugins-03.png",
+      "/projects/voidplugins/voidadmin-01.png",
+      "/projects/voidplugins/voidadmin-02.png",
     ],
   },
   {
