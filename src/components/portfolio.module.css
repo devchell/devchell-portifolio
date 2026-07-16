@@ -891,44 +891,83 @@
 }
 
 .projectStageBar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+  display: flex;
   align-items: center;
-  gap: 0.7rem;
-  height: 40px;
-  padding: 0 0.85rem;
+  gap: 0.55rem;
+  height: 46px;
+  padding: 0 0.8rem;
   background: var(--code-top);
+  border-bottom: 1px solid rgba(15, 15, 15, 0.06);
+}
+
+.portfolio[data-theme="dark"] .projectStageBar {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.projectStageLeft,
+.projectStageRight,
+.projectStageNav {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.projectStageLeft {
+  gap: 0.6rem;
+}
+
+.projectStageNav {
+  gap: 0.1rem;
+}
+
+.projectStageRight {
+  gap: 0.1rem;
+  justify-content: flex-end;
 }
 
 .projectStageDots {
-  grid-column: 1;
   display: inline-flex;
   gap: 0.44rem;
-  justify-self: start;
+}
+
+.projectStageIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.projectStageIcon[data-dim="true"] {
+  opacity: 0.38;
 }
 
 .projectStageAddress {
-  grid-column: 2;
-  justify-self: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 440px;
+  margin: 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 0.42rem;
-  min-width: 0;
-  max-width: 100%;
-  padding: 0.3rem 0.85rem;
-  border-radius: 999px;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.36rem 0.7rem;
+  border-radius: 9px;
   background: var(--panel-bg);
   color: var(--text-faint);
   font-family: var(--font-terminal);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   line-height: 1;
   letter-spacing: -0.01em;
-  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(15, 15, 15, 0.06);
 }
 
 .portfolio[data-theme="dark"] .projectStageAddress {
   background: var(--panel-muted);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
 .projectStageAddress[data-locked="true"] {
@@ -945,6 +984,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.projectStageReload {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.15rem;
+  opacity: 0.5;
+}
+
+@media (max-width: 720px) {
+  .projectStageNav,
+  .projectStageRight {
+    display: none;
+  }
 }
 
 .projectAside {

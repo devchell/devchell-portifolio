@@ -755,6 +755,59 @@ function StageLockGlyph() {
   );
 }
 
+function StageChevron({ dir = "left" }: { dir?: "left" | "right" }) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={dir === "right" ? { transform: "scaleX(-1)" } : undefined}>
+      <path d="M14.5 6 8.5 12l6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function StageReloadGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M20 6.5v4.5h-4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M19.4 11a7.5 7.5 0 1 0-1.3 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function StageShareGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3.5v11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M8.5 7 12 3.5 15.5 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 10.5H5.5v9.5h13V10.5H17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function StageTabsGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="7" y="7" width="13" height="13" rx="2.4" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M4.5 16.5V6a1.5 1.5 0 0 1 1.5-1.5h10.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function StagePlusGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 5.5v13M5.5 12h13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function StageSidebarGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3.5" y="5" width="17" height="14" rx="2.4" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9.5 5v14" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
 function SunMoonIcon({ theme }: { theme: Theme }) {
   return theme === "light" ? (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1923,11 +1976,18 @@ export function PortfolioApp() {
               >
                 <div className={styles.projectMediaPanel}>
                   <div className={styles.projectStage}>
-                    <div className={styles.projectStageBar}>
-                      <span className={styles.projectStageDots} aria-hidden="true">
-                        <span className={styles.editorDot} data-tone="red" />
-                        <span className={styles.editorDot} data-tone="yellow" />
-                        <span className={styles.editorDot} data-tone="green" />
+                    <div className={styles.projectStageBar} aria-hidden="true">
+                      <span className={styles.projectStageLeft}>
+                        <span className={styles.projectStageDots}>
+                          <span className={styles.editorDot} data-tone="red" />
+                          <span className={styles.editorDot} data-tone="yellow" />
+                          <span className={styles.editorDot} data-tone="green" />
+                        </span>
+                        <span className={styles.projectStageNav}>
+                          <span className={styles.projectStageIcon}><StageSidebarGlyph /></span>
+                          <span className={styles.projectStageIcon}><StageChevron dir="left" /></span>
+                          <span className={styles.projectStageIcon} data-dim="true"><StageChevron dir="right" /></span>
+                        </span>
                       </span>
                       <span
                         className={styles.projectStageAddress}
@@ -1939,6 +1999,12 @@ export function PortfolioApp() {
                             ? copy.projectPrivateTag
                             : activeProjectHost || activeProject.name.toLowerCase()}
                         </span>
+                        <span className={styles.projectStageReload}><StageReloadGlyph /></span>
+                      </span>
+                      <span className={styles.projectStageRight}>
+                        <span className={styles.projectStageIcon}><StageShareGlyph /></span>
+                        <span className={styles.projectStageIcon}><StagePlusGlyph /></span>
+                        <span className={styles.projectStageIcon}><StageTabsGlyph /></span>
                       </span>
                     </div>
 
