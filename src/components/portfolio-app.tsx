@@ -376,11 +376,11 @@ const PROJECTS: Project[] = [
     technologies: ["Next.js", "Supabase", "PostgreSQL"],
     systems: ["CRM", "Automation", "SEO"],
     screenshots: [
+      "/projects/ultrarubber/uradmin-01.png",
       "/projects/ultrarubber/ultrarubber-01.png",
       "/projects/ultrarubber/ultrarubber-02.png",
       "/projects/ultrarubber/ultrarubber-03.png",
       "/projects/ultrarubber/ultrarubber-04.png",
-      "/projects/ultrarubber/ultrarubber-05.png",
     ],
   },
   {
