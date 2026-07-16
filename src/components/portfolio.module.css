@@ -972,7 +972,7 @@
 .projectFrame {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 0;
   background: transparent;
@@ -2047,7 +2047,7 @@
   }
 
   .projectFrame {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
   }
 
   .projectUtilities {
@@ -2207,7 +2207,7 @@
   }
 
   .projectFrame {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
   }
 
   .projectRailName {

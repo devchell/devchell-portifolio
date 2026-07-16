@@ -313,11 +313,11 @@ const PROJECTS: Project[] = [
     technologies: ["React", "TypeScript", "Supabase", "Tailwind"],
     systems: ["Landing Page", "Dashboard", "SaaS"],
     screenshots: [
-      "/projects/tevio/tevioadmin-01.png",
       "/projects/tevio/tevio-01.png",
       "/projects/tevio/tevio-02.png",
       "/projects/tevio/tevio-03.png",
       "/projects/tevio/tevio-04.png",
+      "/projects/tevio/tevioadmin-01.png",
     ],
   },
   {
@@ -376,11 +376,11 @@ const PROJECTS: Project[] = [
     technologies: ["Next.js", "Supabase", "PostgreSQL"],
     systems: ["CRM", "Automation", "SEO"],
     screenshots: [
-      "/projects/ultrarubber/uradmin-01.png",
       "/projects/ultrarubber/ultrarubber-01.png",
       "/projects/ultrarubber/ultrarubber-02.png",
       "/projects/ultrarubber/ultrarubber-03.png",
       "/projects/ultrarubber/ultrarubber-04.png",
+      "/projects/ultrarubber/uradmin-01.png",
     ],
   },
   {
@@ -398,11 +398,11 @@ const PROJECTS: Project[] = [
     technologies: ["Next.js", "Prisma", "PostgreSQL"],
     systems: ["CRM", "WhatsApp", "Email"],
     screenshots: [
+      "/projects/viviani/viviani-01.png",
+      "/projects/viviani/viviani-02.png",
       "/projects/viviani/vivpainel-01.png",
       "/projects/viviani/vivpainel-03.png",
       "/projects/viviani/vivpainel-02.png",
-      "/projects/viviani/vivpainel-04.png",
-      "/projects/viviani/viviani-02.png",
     ],
   },
   {
@@ -419,11 +419,11 @@ const PROJECTS: Project[] = [
     technologies: ["React", "Node.js", "PostgreSQL"],
     systems: ["SaaS", "Omnichannel", "AI"],
     screenshots: [
-      "/projects/tyviatalk/tyviaadmin-01.png",
-      "/projects/tyviatalk/tyviaadmin-02.png",
       "/projects/tyviatalk/tyviatalk-01.png",
       "/projects/tyviatalk/tyviatalk-02.png",
       "/projects/tyviatalk/tyviatalk-03.png",
+      "/projects/tyviatalk/tyviaadmin-01.png",
+      "/projects/tyviatalk/tyviaadmin-02.png",
     ],
   },
 ];
