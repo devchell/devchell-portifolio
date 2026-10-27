@@ -55,7 +55,7 @@ function responseMessage(locale: Locale, key: "invalid" | "tooLong" | "spam" | "
       spam: "Envio bloqueado pela protecao anti-spam.",
       missingConfig: "Envio ainda nao configurado. Defina a chave RESEND_API_KEY na Vercel.",
       provider: "Nao consegui concluir o envio agora. Tente novamente em instantes ou use o WhatsApp.",
-      success: "Solicitacao enviada. Vou responder pelo e-mail informado.",
+      success: "Mensagem enviada. Vou responder pelo e-mail informado.",
     },
     en: {
       invalid: "Please review the form fields before sending.",
@@ -63,7 +63,7 @@ function responseMessage(locale: Locale, key: "invalid" | "tooLong" | "spam" | "
       spam: "Submission blocked by anti-spam protection.",
       missingConfig: "Email sending is not configured yet. Define RESEND_API_KEY on Vercel.",
       provider: "I could not complete the submission right now. Try again shortly or use WhatsApp.",
-      success: "Request sent. I will reply to your email shortly.",
+      success: "Message sent. I will reply to your email shortly.",
     },
   } as const;
 
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       return Response.json({ message: responseMessage(locale, "spam") }, { status: 400 });
     }
 
-    if (name.length < 2 || !isValidEmail(email) || !isValidInternationalPhone(whatsapp) || scope.length < 12) {
+    if (name.length < 2 || !isValidEmail(email) || (whatsapp !== "" && !isValidInternationalPhone(whatsapp)) || scope.length < 12) {
       return Response.json({ message: responseMessage(locale, "invalid") }, { status: 400 });
     }
 
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
     const emailText = `*Nome:* ${name}
 *Email:* ${email}
-*WhatsApp:* ${whatsapp}
+*WhatsApp:* ${whatsapp || "(nao informado)"}
 
 ${scope}`;
 
@@ -107,7 +107,7 @@ ${scope}`;
       <div style="font-family: Arial, sans-serif; color: #111111; line-height: 1.6;">
         <p><strong>Nome:</strong> ${escapeHtml(name)}</p>
         <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-        <p><strong>WhatsApp:</strong> ${escapeHtml(whatsapp)}</p>
+        <p><strong>WhatsApp:</strong> ${escapeHtml(whatsapp || "(nao informado)")}</p>
         <div style="height: 1px; background: #dddddd; margin: 20px 0;"></div>
         <p style="white-space: pre-wrap;">${escapeHtml(scope)}</p>
       </div>
@@ -123,7 +123,7 @@ ${scope}`;
         from: RESEND_FROM_EMAIL,
         to: [CONTACT_EMAIL],
         reply_to: email,
-        subject: `Novo pedido de orcamento - ${name}`,
+        subject: `Novo contato pelo portfolio - ${name}`,
         text: emailText,
         html: emailHtml,
       }),

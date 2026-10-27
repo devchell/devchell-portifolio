@@ -2586,3 +2586,35 @@
     border-radius: var(--radius-ui);
   }
 }
+
+.projectPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-soft);
+}
+
+.projectPlaceholder strong {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  color: var(--text-strong);
+}
+
+.projectPlaceholder small {
+  font-family: var(--font-geist-mono), monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.privacyNote {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-soft);
+  max-width: 62ch;
+}

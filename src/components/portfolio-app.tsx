@@ -22,6 +22,8 @@ type Project = {
   name: string;
   url: string;
   locked?: boolean;
+  statusTag?: Record<Locale, string>;
+  linkLabel?: Record<Locale, string>;
   title: Record<Locale, string>;
   description: Record<Locale, string>;
   technologies: string[];
@@ -36,10 +38,10 @@ type ContactResponse = {
 const SECTION_IDS = ["hero", "sobre", "projetos", "contato"] as const;
 const CONTACT_EMAIL = "rodriguessnts@outlook.com";
 const CONTACT_SCOPE_MAX_LENGTH = 1200;
-const WHATSAPP_NUMBER = "5511978290118";
+const WHATSAPP_NUMBER = "5511989468955";
 const WHATSAPP_MESSAGE = {
-  pt: "Olá, João. Quero solicitar um orçamento de serviço para um projeto.",
-  en: "Hi João, I would like to request a quote for a project.",
+  pt: "Olá, João. Vim pelo seu portfólio e gostaria de conversar.",
+  en: "Hi João, I found your portfolio and would like to get in touch.",
 } as const;
 
 const COUNTRY_OPTIONS = [
@@ -112,6 +114,8 @@ const PROJECT_BADGE_META: Record<string, { icon: ProjectBadgeIcon }> = {
   WhatsApp: { icon: "whatsapp" },
   Email: { icon: "email" },
   UX: { icon: "ux" },
+  "Open Source": { icon: "generic" },
+  PWA: { icon: "generic" },
 };
 
 const PROJECT_BADGE_LABELS: Record<Locale, Record<string, string>> = {
@@ -141,6 +145,8 @@ const PROJECT_BADGE_LABELS: Record<Locale, Record<string, string>> = {
     WhatsApp: "WhatsApp",
     Email: "E-mail",
     UX: "UX",
+    "Open Source": "Open source",
+    PWA: "PWA",
   },
   en: {
     "Next.js": "Next.js",
@@ -168,6 +174,8 @@ const PROJECT_BADGE_LABELS: Record<Locale, Record<string, string>> = {
     WhatsApp: "WhatsApp",
     Email: "Email",
     UX: "UX",
+    "Open Source": "Open source",
+    PWA: "PWA",
   },
 };
 
@@ -175,12 +183,12 @@ const COPY = {
   pt: {
     nav: ["Sobre", "Projetos", "Contato"],
     heroEyebrow: "JOÃO VITOR RODRIGUES",
-    heroTitleTop: "Desenvolvedor",
-    heroTitleBottom: "Web & Sistemas",
+    heroTitleTop: "Engenheiro",
+    heroTitleBottom: "Full-stack",
     heroDescription:
-      "Transformo ideias em produtos digitais completos, do backend ao deploy.",
-    heroMeta: "FullStack · SaaS · CRM · Landing Pages · IA",
-    heroPrimary: "Fazer Orçamento",
+      "Engenheiro de Software: back-end, SaaS multi-tenant e IA aplicada, do banco ao deploy.",
+    heroMeta: "Full-stack · Back-end · IA aplicada (LLM)",
+    heroPrimary: "Contato",
     heroSecondary: "Ver Projetos",
     aboutLabel: "SOBRE MIM",
     aboutTitleStrong: "Código limpo,",
@@ -189,27 +197,27 @@ const COPY = {
     projectsTitleStrong: "O que eu",
     projectsTitleSoft: "já construí.",
     projectsIntro:
-      "Projetos pensados para converter, posicionar e sustentar operação com clareza visual e técnica.",
+      "Produtos em produção e projetos em desenvolvimento, do back-end ao deploy.",
     projectSummary: "Resumo do projeto",
     projectTechLabel: "Stacks & Tech",
     projectSystemsLabel: "Tipos",
     projectVisit: "Visitar projeto",
-    projectUnavailable: "Projeto privado",
-    projectPrivateTag: "acesso privado",
+    projectUnavailable: "Sem link público",
+    projectPrivateTag: "sem link público",
     contactLabel: "CONTATO",
-    contactTitleStrong: "Briefing em código,",
-    contactTitleSoft: "execução sem ruído.",
+    contactTitleStrong: "Vamos conversar,",
+    contactTitleSoft: "sem ruído.",
     contactDescription:
-      "Descreva objetivo, contexto e escopo como se estivesse abrindo uma issue bem escrita. Eu organizo o resto.",
+      "Envie uma mensagem com o assunto e o contexto. Respondo pelo e-mail informado.",
     submitCommand: "git push",
-    submitCaption: "enviar briefing",
+    submitCaption: "enviar mensagem",
     submitLoadingCommand: "pushing...",
-    submitLoadingCaption: "enviando briefing",
+    submitLoadingCaption: "enviando mensagem",
     whatsapp: "Conversar no WhatsApp",
-    whatsappCaption: "resposta rápida",
+    whatsappCaption: "mensagem direta",
     statusIdle: "Preencha o formulário e eu retorno pelo e-mail informado.",
     statusLoading: "Enviando sua solicitação...",
-    statusSuccess: "Solicitação enviada. Vou responder pelo e-mail informado.",
+    statusSuccess: "Mensagem enviada. Vou responder pelo e-mail informado.",
     statusError: "Não foi possível enviar agora. Use o WhatsApp e eu sigo por lá.",
     placeholders: {
       name: "Seu nome",
@@ -217,7 +225,7 @@ const COPY = {
       countryCode: "+55",
       whatsapp: "(11) 9 9999-9999",
       scope:
-        "Conte o objetivo, prazo, entregáveis, integrações e qualquer referência importante.",
+        "Escreva sua mensagem: assunto e contexto.",
     },
     navAria: "Seções",
     toggleLocaleAria: "Alternar idioma",
@@ -232,17 +240,17 @@ const COPY = {
     screenshotAlt: "captura",
     footerContact: "Contato",
     footerSocials: "Redes sociais",
-    footerSignature: "Portfólio criado por",
+    footerSignature: "Portfólio de João Vitor Rodrigues ·",
   },
   en: {
     nav: ["About", "Projects", "Contact"],
     heroEyebrow: "JOAO VITOR RODRIGUES",
-    heroTitleTop: "Developer",
-    heroTitleBottom: "Web & Systems",
+    heroTitleTop: "Engineer",
+    heroTitleBottom: "Full-stack",
     heroDescription:
-      "I turn ideas into complete digital products, from backend architecture to deployment.",
-    heroMeta: "FullStack · SaaS · CRM · Landing Pages · AI",
-    heroPrimary: "Request Quote",
+      "Software Engineer: back-end, multi-tenant SaaS and applied AI, from database to deployment.",
+    heroMeta: "Full-stack · Back-end · Applied AI (LLM)",
+    heroPrimary: "Contact",
     heroSecondary: "View Projects",
     aboutLabel: "ABOUT ME",
     aboutTitleStrong: "Clean code,",
@@ -251,27 +259,27 @@ const COPY = {
     projectsTitleStrong: "What I",
     projectsTitleSoft: "have built.",
     projectsIntro:
-      "Projects designed to convert, position brands, and support real operations with visual and technical clarity.",
+      "Products in production and projects in development, from back-end to deployment.",
     projectSummary: "Project overview",
     projectTechLabel: "Stacks & Tech",
     projectSystemsLabel: "System Type",
     projectVisit: "Visit project",
-    projectUnavailable: "Private project",
-    projectPrivateTag: "private access",
+    projectUnavailable: "No public link",
+    projectPrivateTag: "no public link",
     contactLabel: "CONTACT",
-    contactTitleStrong: "Code-like brief,",
-    contactTitleSoft: "clean execution.",
+    contactTitleStrong: "Let's talk,",
+    contactTitleSoft: "no noise.",
     contactDescription:
-      "Describe the goal, context, and scope as if you were opening a well-written issue. I will structure the rest.",
+      "Send a message with the subject and context. I will reply to the email you provide.",
     submitCommand: "git push",
-    submitCaption: "send brief",
+    submitCaption: "send message",
     submitLoadingCommand: "pushing...",
-    submitLoadingCaption: "sending brief",
+    submitLoadingCaption: "sending message",
     whatsapp: "Talk on WhatsApp",
-    whatsappCaption: "quick reply",
+    whatsappCaption: "direct message",
     statusIdle: "Fill out the form and I will reply to the email you provide.",
     statusLoading: "Sending your request...",
-    statusSuccess: "Request sent. I will reply to your email shortly.",
+    statusSuccess: "Message sent. I will reply to your email shortly.",
     statusError: "The request could not be sent right now. Use WhatsApp and I will continue there.",
     placeholders: {
       name: "Your name",
@@ -279,7 +287,7 @@ const COPY = {
       countryCode: "+1",
       whatsapp: "(555) 123-4567",
       scope:
-        "Tell me the goal, timeline, deliverables, integrations and any references that matter.",
+        "Write your message: subject and context.",
     },
     navAria: "Sections",
     toggleLocaleAria: "Switch language",
@@ -294,7 +302,7 @@ const COPY = {
     screenshotAlt: "screenshot",
     footerContact: "Contact",
     footerSocials: "Social media",
-    footerSignature: "Portfolio created by",
+    footerSignature: "Portfolio of João Vitor Rodrigues ·",
   },
 } as const;
 
@@ -302,16 +310,13 @@ const PROJECTS: Project[] = [
   {
     name: "Tevio",
     url: "https://tevio.com.br",
-    title: {
-      pt: "Plataforma de Infraestrutura",
-      en: "Infrastructure Platform",
-    },
+    title: { pt: "Venda de Servidores", en: "Server Sales Platform" },
     description: {
-      pt: "Plataforma de infraestrutura cloud para times que precisam de performance real, com landing editorial, portal de clientes, onboarding automatizado e gestão de planos VPS, Dedicado e Colocation.",
-      en: "Cloud infrastructure platform for teams needing real performance, with an editorial landing, client portal, automated onboarding, and VPS, Dedicated, and Colocation plan management.",
+      pt: "Plataforma de venda de servidores (VPS) com loja e checkout, portal do cliente e painel administrativo, com provisionamento automatizado, cobrança recorrente e módulos de IA generativa.",
+      en: "Server (VPS) sales platform with storefront and checkout, client portal and admin panel, featuring automated provisioning, recurring billing and generative AI modules.",
     },
-    technologies: ["React", "TypeScript", "Supabase", "Tailwind"],
-    systems: ["Landing Page", "Dashboard", "SaaS"],
+    technologies: ["Next.js", "TypeScript", "Node.js", "PostgreSQL"],
+    systems: ["SaaS", "Dashboard", "AI"],
     screenshots: [
       "/projects/tevio/tevio-01.png",
       "/projects/tevio/tevio-02.png",
@@ -321,102 +326,14 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    name: "Vetta",
-    url: "https://vetta-devchells-projects.vercel.app/",
-    title: {
-      pt: "Landing Page",
-      en: "Landing Page",
-    },
-    description: {
-      pt: "Landing page editorial criada para vender um infoproduto de marketing com tese visual forte, copy modular e foco em conversão.",
-      en: "Editorial landing page created to sell a marketing infoproduct with a strong visual thesis, modular copy, and conversion focus.",
-    },
-    technologies: ["Next.js", "Vercel"],
-    systems: ["Landing Page", "SEO"],
-    screenshots: [
-      "/projects/vetta/vetta-01.png",
-      "/projects/vetta/vetta-02.png",
-      "/projects/vetta/vetta-03.png",
-      "/projects/vetta/vetta-04.png",
-      "/projects/vetta/vetta-05.png",
-    ],
-  },
-  {
-    name: "VoidPlugins",
-    url: "https://voidplugins.com.br/",
-    title: {
-      pt: "Marketplace de Plugins Minecraft",
-      en: "Minecraft Plugins Marketplace",
-    },
-    description: {
-      pt: "Loja e ecossistema para venda de plugins premium de Minecraft — catálogo, licenciamento, contas de cliente, painel admin e entrega/atualização automática de versões.",
-      en: "Store and ecosystem for selling premium Minecraft plugins — catalog, licensing, customer accounts, admin panel, and automated version delivery and updates.",
-    },
-    technologies: ["Next.js", "Supabase", "PostgreSQL"],
-    systems: ["SaaS", "Automation", "Dashboard"],
-    screenshots: [
-      "/projects/voidplugins/voidplugins-01.png",
-      "/projects/voidplugins/voidplugins-02.png",
-      "/projects/voidplugins/voidplugins-03.png",
-      "/projects/voidplugins/voidadmin-01.png",
-      "/projects/voidplugins/voidadmin-02.png",
-    ],
-  },
-  {
-    name: "UltraRubber",
-    url: "https://ultrarubber.vercel.app/",
-    title: {
-      pt: "Landing Page & CRM",
-      en: "Landing Page & CRM",
-    },
-    description: {
-      pt: "Sistema de captação e gestão comercial com landing pública, login interno, fluxo de orçamentos, catálogo, métricas e operação industrial estruturada.",
-      en: "Lead capture and commercial operations system with a public landing, internal login, quote flow, catalog, metrics, and a structured industrial workflow.",
-    },
-    technologies: ["Next.js", "Supabase", "PostgreSQL"],
-    systems: ["CRM", "Automation", "SEO"],
-    screenshots: [
-      "/projects/ultrarubber/ultrarubber-01.png",
-      "/projects/ultrarubber/ultrarubber-02.png",
-      "/projects/ultrarubber/ultrarubber-03.png",
-      "/projects/ultrarubber/ultrarubber-04.png",
-      "/projects/ultrarubber/uradmin-01.png",
-    ],
-  },
-  {
-    name: "VivianiCRM",
-    url: "",
-    locked: true,
-    title: {
-      pt: "Landing Page & CRM",
-      en: "Landing Page & CRM",
-    },
-    description: {
-      pt: "CRM single-tenant para operação de serviços, centralizando leads, agenda, financeiro, conteúdo público e automações de WhatsApp e e-mail em um único ecossistema.",
-      en: "Single-tenant CRM for a services operation, centralizing leads, scheduling, finance, public content, and WhatsApp/email automations in one ecosystem.",
-    },
-    technologies: ["Next.js", "Prisma", "PostgreSQL"],
-    systems: ["CRM", "WhatsApp", "Email"],
-    screenshots: [
-      "/projects/viviani/viviani-01.png",
-      "/projects/viviani/viviani-02.png",
-      "/projects/viviani/vivpainel-01.png",
-      "/projects/viviani/vivpainel-03.png",
-      "/projects/viviani/vivpainel-02.png",
-    ],
-  },
-  {
     name: "TyviaTalk",
     url: "https://tyviatalk.com/",
-    title: {
-      pt: "Plataforma Omnichannel SaaS",
-      en: "Omnichannel SaaS Platform",
-    },
+    title: { pt: "Omnichat com IA", en: "AI Omnichat" },
     description: {
-      pt: "Suite multitenant para atendimento omnichannel, gestão operacional, IA, módulos white-label e expansão por produto dentro do ecossistema TyviaTalk.",
-      en: "Multi-tenant suite for omnichannel support, operational management, AI, white-label modules, and product-based expansion across the TyviaTalk ecosystem.",
+      pt: "Omnichat para empresas, integrado a uma IA que estuda o negócio e melhora com o uso. Multi-tenant, com atendimento omnichannel e painel administrativo.",
+      en: "Omnichat for businesses, integrated with an AI that learns the company and improves with use. Multi-tenant, with omnichannel support and an admin panel.",
     },
-    technologies: ["React", "Node.js", "PostgreSQL"],
+    technologies: ["React", "TypeScript", "Node.js", "PostgreSQL"],
     systems: ["SaaS", "Omnichannel", "AI"],
     screenshots: [
       "/projects/tyviatalk/tyviatalk-01.png",
@@ -426,18 +343,99 @@ const PROJECTS: Project[] = [
       "/projects/tyviatalk/tyviaadmin-02.png",
     ],
   },
+  {
+    name: "SinceMarket",
+    url: "https://sincemarket.com",
+    title: { pt: "Marketplace para Games", en: "Gaming Marketplace" },
+    description: {
+      pt: "Marketplace para a área de games: servidores de jogos e infoprodutos, com repasse via PIX, tickets de suporte privados e design system próprio.",
+      en: "Marketplace for the gaming space: game servers and digital products, with PIX payouts, private support tickets and its own design system.",
+    },
+    technologies: ["Next.js", "TypeScript", "Node.js", "PostgreSQL"],
+    systems: ["SaaS", "Dashboard"],
+    screenshots: [],
+  },
+  {
+    name: "QA_Doc",
+    url: "https://github.com/devchell/QA_Doc",
+    title: { pt: "Documentação e Testes de QA", en: "QA Documentation and Testing" },
+    description: {
+      pt: "Ferramenta open source (MIT) de documentação e testes de QA: editor com paginação A4 fiel ao PDF, acervo assinado com Ed25519, instalador e atualizador em C#, migrations reversíveis e testes automatizados.",
+      en: "Open source (MIT) QA documentation and testing tool: editor with PDF-faithful A4 pagination, Ed25519-signed archive, C# installer and updater, reversible migrations and automated tests.",
+    },
+    technologies: ["React", "TypeScript", "Express", "Node.js"],
+    systems: ["Open Source"],
+    screenshots: [],
+    linkLabel: { pt: "Ver no GitHub", en: "View on GitHub" },
+  },
+  {
+    name: "SaciaBem",
+    url: "",
+    locked: true,
+    statusTag: { pt: "em desenvolvimento", en: "in development" },
+    title: { pt: "SaaS de Pedidos para Restaurantes", en: "Restaurant Ordering SaaS" },
+    description: {
+      pt: "SaaS multi-tenant de pedidos para restaurantes, em desenvolvimento: isolamento por RLS no PostgreSQL, assinatura com Mercado Pago, CI com testes automatizados e deploy em VPS com Docker e Nginx.",
+      en: "Multi-tenant restaurant ordering SaaS, in development: PostgreSQL RLS isolation, Mercado Pago subscriptions, CI with automated tests and VPS deployment with Docker and Nginx.",
+    },
+    technologies: ["Next.js", "TypeScript", "PostgreSQL"],
+    systems: ["SaaS"],
+    screenshots: [],
+  },
+  {
+    name: "Sistema Financeiro",
+    url: "",
+    locked: true,
+    statusTag: { pt: "projeto pessoal", en: "personal project" },
+    title: { pt: "PWA de Finanças Pessoais", en: "Personal Finance PWA" },
+    description: {
+      pt: "PWA de finanças pessoais com Supabase e RLS, importação OFX/CSV com deduplicação, notificações Web Push e backup diário via GitHub Actions.",
+      en: "Personal finance PWA with Supabase and RLS, OFX/CSV import with deduplication, Web Push notifications and daily backups via GitHub Actions.",
+    },
+    technologies: ["Next.js", "TypeScript", "Supabase"],
+    systems: ["PWA"],
+    screenshots: [],
+  },
+  {
+    name: "DinoBot",
+    url: "",
+    locked: true,
+    statusTag: { pt: "projeto pessoal", en: "personal project" },
+    title: { pt: "Bot de Twitch com Painel", en: "Twitch Bot with Dashboard" },
+    description: {
+      pt: "Bot de Twitch com painel web: EventSub e Helix, API Fastify, PostgreSQL com RLS, OAuth da Twitch com PKCE e tokens cifrados.",
+      en: "Twitch bot with a web dashboard: EventSub and Helix, Fastify API, PostgreSQL with RLS, Twitch OAuth with PKCE and encrypted tokens.",
+    },
+    technologies: ["Node.js", "TypeScript", "PostgreSQL", "Next.js"],
+    systems: ["Dashboard"],
+    screenshots: [],
+  },
+  {
+    name: "Nexo Astra",
+    url: "",
+    locked: true,
+    statusTag: { pt: "em desenvolvimento", en: "in development" },
+    title: { pt: "Portal de Fãs de Jogos", en: "Gaming Fan Portal" },
+    description: {
+      pt: "Portal de fãs de jogos em desenvolvimento, com robô de coleta em TypeScript agendado no GitHub Actions e testes E2E com Playwright.",
+      en: "Gaming fan portal in development, with a TypeScript collection bot scheduled on GitHub Actions and Playwright E2E tests.",
+    },
+    technologies: ["Next.js", "TypeScript", "Drizzle", "PostgreSQL"],
+    systems: ["Automation"],
+    screenshots: [],
+  },
 ];
 
 const HERO_FOCUS_ROTATIONS = {
   pt: [
-    "SaaS + CRM + Landing Pages",
-    "Sistemas Web + Automação",
-    "Dashboards + APIs + Deploy",
+    "Back-end + APIs + Deploy",
+    "SaaS multi-tenant + PostgreSQL",
+    "IA aplicada (LLM) + Integrações",
   ],
   en: [
-    "SaaS + CRM + Landing Pages",
-    "Web Systems + Automation",
-    "Dashboards + APIs + Deploy",
+    "Back-end + APIs + Deploy",
+    "Multi-tenant SaaS + PostgreSQL",
+    "Applied AI (LLM) + Integrations",
   ],
 } as const;
 
@@ -447,13 +445,13 @@ const CODE_COPY = {
       objectName: "construtor",
       focusKey: "foco",
       executionKey: "execucao",
-      executionValue: "Design + Código + Deploy",
+      executionValue: "Código + Testes + Deploy",
       deliveryKey: "entrega",
-      deliveryValue: "Sistemas claros e escaláveis",
+      deliveryValue: "Sistemas claros, seguros e escaláveis",
       statusKey: "status",
       statusValue: "ativo",
-      footerComment: "// disponível para freela",
-      footerMeta: "arquitetura limpa | clareza visual",
+      footerComment: "// back-end · full-stack · LLM",
+      footerMeta: "arquitetura limpa | código testado",
     },
     about: {
       objectName: "desenvolvedor",
@@ -462,29 +460,25 @@ const CODE_COPY = {
       stackKey: "stack",
       stackLines: [
         ["Next.js", "TypeScript", "Node.js"],
-        ["Java", "C#", "AWS", "LLMs"],
+        ["PostgreSQL", "C#/.NET", "LLMs"],
       ],
       specialtiesKey: "especialidades",
       specialtyLines: [
-        ["SaaS", "CRM", "Landing Page"],
-        ["UI/UX", "Automação", "AppSec", "IA"],
+        ["Back-end", "SaaS multi-tenant", "APIs"],
+        ["IA aplicada (LLM)", "QA", "Segurança"],
       ],
       educationKey: "formacao",
-      educationValue: "Ciência da Computação",
-      postGradKey: "posGrad",
-      postGradValue: "Arquitetura & Engenharia de IA",
-      freelanceKey: "freela",
-      availableKey: "disponivel",
+      educationValue: "Ciência da Computação — Descomplica (previsão de conclusão 2026)",
       approachKey: "abordagem",
       approachValue: "clareza acima do ruído",
     },
     contact: {
-      objectName: "solicitacaoProjeto",
+      objectName: "contato",
       nameKey: "nome",
       emailKey: "email",
       whatsappKey: "whatsapp",
-      scopeKey: "escopo",
-      scopeLabel: "Escopo do projeto",
+      scopeKey: "mensagem",
+      scopeLabel: "Mensagem",
     },
   },
   en: {
@@ -492,13 +486,13 @@ const CODE_COPY = {
       objectName: "builder",
       focusKey: "focus",
       executionKey: "execution",
-      executionValue: "Design + Code + Deploy",
+      executionValue: "Code + Tests + Deploy",
       deliveryKey: "delivery",
-      deliveryValue: "Clear and scalable systems",
+      deliveryValue: "Clear, secure and scalable systems",
       statusKey: "status",
       statusValue: "online",
-      footerComment: "// available for freelance",
-      footerMeta: "clean architecture | visual clarity",
+      footerComment: "// back-end · full-stack · LLM",
+      footerMeta: "clean architecture | tested code",
     },
     about: {
       objectName: "developer",
@@ -507,29 +501,25 @@ const CODE_COPY = {
       stackKey: "stack",
       stackLines: [
         ["Next.js", "TypeScript", "Node.js"],
-        ["Java", "C#", "AWS", "LLMs"],
+        ["PostgreSQL", "C#/.NET", "LLMs"],
       ],
       specialtiesKey: "specialties",
       specialtyLines: [
-        ["SaaS", "CRM", "Landing Pages"],
-        ["UI/UX", "Automation", "AppSec", "AI"],
+        ["Back-end", "Multi-tenant SaaS", "APIs"],
+        ["Applied AI (LLM)", "QA", "Security"],
       ],
       educationKey: "education",
-      educationValue: "Computer Science",
-      postGradKey: "postGrad",
-      postGradValue: "AI Architecture & Engineering",
-      freelanceKey: "freelance",
-      availableKey: "available",
+      educationValue: "Computer Science — Descomplica (expected completion 2026)",
       approachKey: "approach",
       approachValue: "clarity over noise",
     },
     contact: {
-      objectName: "projectRequest",
+      objectName: "contact",
       nameKey: "name",
       emailKey: "email",
       whatsappKey: "whatsapp",
-      scopeKey: "scope",
-      scopeLabel: "Project scope",
+      scopeKey: "message",
+      scopeLabel: "Message",
     },
   },
 } as const;
@@ -924,16 +914,6 @@ function LinkedinIcon() {
   );
 }
 
-function InstagramIcon() {
-  return (
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="4.5" y="4.5" width="15" height="15" rx="4" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="16.8" cy="7.2" r="0.8" fill="currentColor" />
-    </svg>
-  );
-}
-
 function ProjectBadgeIcon({ icon }: { icon: ProjectBadgeIcon }) {
   const sharedProps = {
     stroke: "currentColor",
@@ -1151,7 +1131,7 @@ export function PortfolioApp() {
   const [statusOverride, setStatusOverride] = useState<string | null>(null);
   const [heroFocusIndex, setHeroFocusIndex] = useState(0);
   const [heroTypingPhase, setHeroTypingPhase] = useState<HeroTypingPhase>("holding");
-  const [typedHeroFocus, setTypedHeroFocus] = useState<string>("SaaS + CRM + Landing Pages");
+  const [typedHeroFocus, setTypedHeroFocus] = useState<string>("Back-end + APIs + Deploy");
   const [isCountryMenuOpen, setIsCountryMenuOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     name: "",
@@ -1170,6 +1150,7 @@ export function PortfolioApp() {
   const codeCopy = CODE_COPY[locale];
   const activeProject = PROJECTS[projectIndex];
   const activeProjectHost = getProjectHost(activeProject.url);
+  const hasScreenshots = activeProject.screenshots.length > 0;
   const heroFocusRotations = HERO_FOCUS_ROTATIONS[locale];
   const activeHeroFocus = heroFocusRotations[heroFocusIndex];
   const badgeLabels = PROJECT_BADGE_LABELS[locale];
@@ -1407,7 +1388,7 @@ export function PortfolioApp() {
     const name = formValues.name.trim();
     const email = formValues.email.trim();
     const countryCode = normalizeCountryCode(formValues.countryCode);
-    const whatsapp = formatInternationalPhone(countryCode, formValues.whatsapp);
+    const whatsapp = formValues.whatsapp.replace(/\D/g, "") ? formatInternationalPhone(countryCode, formValues.whatsapp) : "";
     const scope = formValues.scope.trim();
     const website = formValues.website.trim();
 
@@ -1431,7 +1412,9 @@ export function PortfolioApp() {
       return;
     }
 
-    if (!/^\+\d{1,4}$/.test(countryCode) || getInternationalPhoneDigits(countryCode, formValues.whatsapp).length < 8) {
+    const hasPhone = formValues.whatsapp.replace(/\D/g, "").length > 0;
+
+    if (hasPhone && (!/^\+\d{1,4}$/.test(countryCode) || getInternationalPhoneDigits(countryCode, formValues.whatsapp).length < 8)) {
       setContactState("error");
       setStatusOverride(
         locale === "pt"
@@ -1741,17 +1724,19 @@ export function PortfolioApp() {
                 <p className={styles.sectionText}>
                   {locale === "pt" ? (
                     <>
-                      Transformo ideias em produtos digitais completos, do backend ao
-                      deploy. Sou <strong>Desenvolvedor FullStack</strong> especializado em
-                      soluções web integradas, com foco em SaaS, CRMs e automações que
-                      funcionam no dia a dia do seu negócio.
+                      Sou <strong>Engenheiro de Software Full-stack</strong> com foco em
+                      back-end, SaaS multi-tenant e IA aplicada, do banco ao deploy: APIs
+                      em Node.js e TypeScript, PostgreSQL, React/Next.js, Docker e
+                      integração de LLMs em produto. Cofundador & Engenheiro Full-stack na TyviaTalk (Tevio, TyviaTalk, SinceMarket) e analista de
+                      suporte com QA e desenvolvimento C#/.NET em ERP.
                     </>
                   ) : (
                     <>
-                      I turn ideas into complete digital products, from backend to
-                      deployment. I am a <strong>FullStack Developer</strong> specialized in
-                      integrated web solutions, focused on SaaS, CRM workflows and
-                      automations that support day-to-day business operations.
+                      I am a <strong>Full-stack Software Engineer</strong> focused on
+                      back-end, multi-tenant SaaS and applied AI, from database to
+                      deployment: Node.js and TypeScript APIs, PostgreSQL, React/Next.js,
+                      Docker and LLM integration in products. Co-founder & Full-stack Engineer at TyviaTalk (Tevio, TyviaTalk, SinceMarket) and ERP
+                      support analyst with QA and C#/.NET development.
                     </>
                   )}
                 </p>
@@ -1759,16 +1744,15 @@ export function PortfolioApp() {
                 <p className={styles.sectionText}>
                   {locale === "pt" ? (
                     <>
-                      <strong>Cientista da Computação</strong>, pós-graduado em{" "}
-                      <strong>Arquitetura e Engenharia de IA</strong>, aplicando essa base
-                      para entregar sistemas mais inteligentes, seguros e escaláveis.
+                      Cursando <strong>Ciência da Computação</strong> na Descomplica
+                      (previsão de conclusão 2026), com base em Segurança da Informação
+                      aplicada para entregar sistemas seguros e escaláveis.
                     </>
                   ) : (
                     <>
-                      <strong>Computer Science graduate</strong>, with postgraduate work in{" "}
-                      <strong>AI Architecture and Engineering</strong>, applying that
-                      background to deliver systems that are more intelligent, secure and
-                      scalable.
+                      Studying <strong>Computer Science</strong> at Descomplica (expected
+                      completion 2026), with an Information Security background applied to
+                      deliver secure and scalable systems.
                     </>
                   )}
                 </p>
@@ -1776,15 +1760,15 @@ export function PortfolioApp() {
                 <div className={styles.aboutFacts}>
                   <div className={styles.aboutFact}>
                     <span>{locale === "pt" ? "Foco" : "Focus"}</span>
-                    <strong>{locale === "pt" ? "SaaS, CRM & Automação" : "SaaS, CRM & Automation"}</strong>
+                    <strong>{locale === "pt" ? "Back-end, SaaS & IA aplicada" : "Back-end, SaaS & Applied AI"}</strong>
                   </div>
                   <div className={styles.aboutFact}>
                     <span>{locale === "pt" ? "Entrega" : "Delivery"}</span>
-                    <strong>{locale === "pt" ? "Design, código e deploy" : "Design, code and deploy"}</strong>
+                    <strong>{locale === "pt" ? "Código, testes e deploy" : "Code, tests and deploy"}</strong>
                   </div>
                   <div className={styles.aboutFact}>
                     <span>{locale === "pt" ? "Base" : "Foundation"}</span>
-                    <strong>{locale === "pt" ? "Arquitetura + Engenharia de IA" : "Architecture + AI Engineering"}</strong>
+                    <strong>{locale === "pt" ? "Segurança da Informação" : "Information Security"}</strong>
                   </div>
                 </div>
               </div>
@@ -1872,24 +1856,6 @@ export function PortfolioApp() {
                       <span className={styles.editorStringQuote}>{'"'}</span>
                       <span className={styles.editorString}>{codeCopy.about.educationValue}</span>
                       <span className={styles.editorStringQuote}>{'"'}</span>
-                      <span className={styles.editorPunctuation}>,</span>
-                    </div>
-                    <div>
-                      {formatCodeKey(codeCopy.about.postGradKey)}
-                      <span className={styles.editorStringQuote}>{'"'}</span>
-                      <span className={styles.editorString}>{codeCopy.about.postGradValue}</span>
-                      <span className={styles.editorStringQuote}>{'"'}</span>
-                      <span className={styles.editorPunctuation}>,</span>
-                    </div>
-                    <div>&nbsp;</div>
-                    <div>
-                      {formatCodeKey(codeCopy.about.freelanceKey)}
-                      <span className={styles.editorBoolean}>true</span>
-                      <span className={styles.editorPunctuation}>,</span>
-                    </div>
-                    <div>
-                      {formatCodeKey(codeCopy.about.availableKey)}
-                      <span className={styles.editorBoolean}>true</span>
                       <span className={styles.editorPunctuation}>,</span>
                     </div>
                     <div>
@@ -2007,7 +1973,7 @@ export function PortfolioApp() {
                         {activeProject.locked ? <StageLockGlyph /> : <StageGlobeGlyph />}
                         <span className={styles.projectStageAddressText}>
                           {activeProject.locked
-                            ? copy.projectPrivateTag
+                            ? (activeProject.statusTag?.[locale] ?? copy.projectPrivateTag)
                             : activeProjectHost || activeProject.name.toLowerCase()}
                         </span>
                         <span className={styles.projectStageReload}><StageReloadGlyph /></span>
@@ -2020,6 +1986,7 @@ export function PortfolioApp() {
                     </div>
 
                     <div className={styles.projectFrame}>
+                      {hasScreenshots ? (<>
                       <button
                         type="button"
                         className={`${styles.carouselArrow} ${styles.carouselPrev} ${styles.themeFade}`}
@@ -2037,6 +2004,16 @@ export function PortfolioApp() {
                       >
                         <ArrowIcon />
                       </button>
+                      </>) : (
+                        <div className={styles.projectPlaceholder}>
+                          <strong>{activeProject.name}</strong>
+                          <span>{activeProject.title[locale]}</span>
+                          <small>
+                            {activeProject.statusTag?.[locale] ??
+                              (locale === "pt" ? "sem capturas públicas" : "no public screenshots")}
+                          </small>
+                        </div>
+                      )}
 
                       {!activeProject.locked ? (
                         <a
@@ -2069,6 +2046,7 @@ export function PortfolioApp() {
                   </div>
 
                   <div className={styles.projectFrameFooter}>
+                    {hasScreenshots ? (<>
                     <div className={styles.projectScreenshotDots} aria-hidden="true">
                       {activeProject.screenshots.map((shot, index) => (
                         <span
@@ -2083,6 +2061,7 @@ export function PortfolioApp() {
                       {" / "}
                       {String(activeProject.screenshots.length).padStart(2, "0")}
                     </span>
+                    </>) : null}
                   </div>
                 </div>
 
@@ -2100,7 +2079,7 @@ export function PortfolioApp() {
                         className={styles.projectEyebrowStatus}
                         data-locked={activeProject.locked ? "true" : undefined}
                       >
-                        {activeProject.locked ? copy.projectPrivateTag : activeProjectHost}
+                        {activeProject.locked ? (activeProject.statusTag?.[locale] ?? copy.projectPrivateTag) : activeProjectHost}
                       </span>
                     </div>
                     <h3 className={styles.projectName}>{activeProject.name}</h3>
@@ -2150,7 +2129,7 @@ export function PortfolioApp() {
                         className={styles.projectVisit}
                         aria-label={`${copy.openProjectAria} ${activeProject.name}`}
                       >
-                        <span className={styles.projectVisitLabel}>{copy.projectVisit}</span>
+                        <span className={styles.projectVisitLabel}>{activeProject.linkLabel?.[locale] ?? copy.projectVisit}</span>
                         <span className={styles.projectVisitIcon}>
                           <ExternalIcon />
                         </span>
@@ -2310,7 +2289,6 @@ export function PortfolioApp() {
                           placeholder={selectedCountry.placeholder}
                           autoComplete="tel"
                           inputMode="tel"
-                          required
                           className={styles.codeInlineInput}
                         />
                         <span className={styles.editorStringQuote}>{'"'}</span>
@@ -2358,6 +2336,11 @@ export function PortfolioApp() {
                   <div className={styles.contactActions}>
                     <p className={styles.statusMessage}>
                       {statusOverride ?? formatStatus(locale, contactState)}
+                    </p>
+                    <p className={styles.privacyNote}>
+                      {locale === "pt"
+                        ? "Privacidade (LGPD): nome, e-mail e telefone (opcional) são usados apenas para responder à sua mensagem, enviados por e-mail ao titular deste site e não são compartilhados nem usados para marketing. Para pedir acesso, correção ou exclusão, escreva para rodriguessnts@outlook.com."
+                        : "Privacy (LGPD): name, email and phone (optional) are used only to reply to your message, are sent by email to the site owner and are not shared or used for marketing. To request access, correction or deletion, write to rodriguessnts@outlook.com."}
                     </p>
                     <div className={styles.contactButtons}>
                       <button
@@ -2416,7 +2399,7 @@ export function PortfolioApp() {
                       className={styles.footerItem}
                     >
                       <PhoneIcon />
-                      <span>(11) 9 7829-0118</span>
+                      <span>(11) 98946-8955</span>
                     </a>
                   </div>
                 </div>
@@ -2425,15 +2408,6 @@ export function PortfolioApp() {
                   <p className={styles.footerHeading}>{copy.footerSocials}</p>
                   <div className={styles.footerRule} />
                   <div className={styles.footerSocials}>
-                    <a
-                      href="https://www.instagram.com/jv.sntxs"
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.footerSocialLink}
-                      aria-label="Instagram"
-                    >
-                      <InstagramIcon />
-                    </a>
                     <a
                       href="https://github.com/devchell"
                       target="_blank"

@@ -15,9 +15,9 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DevChell | Desenvolvedor Web & Sistemas",
+  title: "DevChell | Engenheiro de Software Full-stack",
   description:
-    "Portfólio de João Vitor Rodrigues, desenvolvedor FullStack focado em SaaS, CRM, automações, landing pages e IA.",
+    "Portfólio de João Vitor Rodrigues, Engenheiro de Software Full-stack: back-end, SaaS multi-tenant e IA aplicada (LLM).",
 };
 
 export default function RootLayout({
